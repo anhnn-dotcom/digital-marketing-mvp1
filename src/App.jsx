@@ -26,8 +26,10 @@ function App() {
               <Route path="/" element={<OverviewDashboardPage />} />
               <Route path="/segments" element={<SegmentListPage />} />
               <Route path="/segments/create" element={<CreateSegmentPage />} />
+              <Route path="/segments/edit/:id" element={<CreateSegmentPage />} />
               <Route path="/campaigns" element={<CampaignListPage />} />
               <Route path="/campaigns/create" element={<CreateCampaignPage />} />
+              <Route path="/campaigns/edit/:id" element={<CreateCampaignPage />} />
               <Route path="/campaigns/:id" element={<CampaignDashboardPage />} />
               <Route path="/dynamic-content" element={<DynamicContentPage />} />
               <Route path="/push-notifications" element={<PushNotificationPage />} />

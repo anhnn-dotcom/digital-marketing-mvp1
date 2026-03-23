@@ -138,8 +138,8 @@ export default function SegmentListPage() {
       ) : (
         <SegmentTable 
           segments={segments} 
-          onView={(segment) => navigate(`/segments/create`)}
-          onEdit={(segment) => navigate(`/segments/create`)}
+          onView={(segment) => navigate(`/segments/edit/${segment.id}`)}
+          onEdit={(segment) => navigate(`/segments/edit/${segment.id}`)}
           onDuplicate={handleDuplicate}
           onSync={handleSync}
           onToggleStatus={handleToggleStatus}
