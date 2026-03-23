@@ -1,6 +1,6 @@
 import { createClient } from '@vercel/edge-config';
 
-const edgeConfigClient = createClient(import.meta.env.VITE_EDGE_CONFIG || process.env.EDGE_CONFIG);
+const edgeConfigClient = createClient(import.meta.env.VITE_EDGE_CONFIG);
 
 export default edgeConfigClient;
 
