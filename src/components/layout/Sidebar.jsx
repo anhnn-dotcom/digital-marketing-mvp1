@@ -7,7 +7,8 @@ import {
   Bell, 
   Sparkles, 
   BarChart3,
-  Settings
+  Settings,
+  Database
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
@@ -22,6 +23,7 @@ export default function Sidebar() {
     { path: '/dynamic-content', label: 'Dynamic Content', icon: LayoutTemplate, badge: contents.length },
     { path: '/push-notifications', label: 'Push Notification', icon: Bell, badge: 1, badgeColor: 'bg-red-100 text-red-700' }, // Mocking 1 pending
     { path: '/recommendations', label: 'Recommendations', icon: Sparkles },
+    { path: '/data-pipeline', label: 'Data Pipeline', icon: Database },
     { path: '/reports', label: 'Reports', icon: BarChart3 },
   ];
 

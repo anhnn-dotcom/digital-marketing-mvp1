@@ -6,7 +6,10 @@ import {
   DYNAMIC_CONTENTS as MOCK_CONTENTS, 
   RECOMMENDATION_RULES as MOCK_RULES,
   PUSH_HISTORY as MOCK_HISTORY,
-  PUSH_TEMPLATES as MOCK_TEMPLATES
+  PUSH_TEMPLATES as MOCK_TEMPLATES,
+  DATA_SOURCES as MOCK_DATA_SOURCES,
+  ENRICHMENT_JOBS as MOCK_ENRICHMENT_JOBS,
+  PIPELINE_ACTIVITY_LOG as MOCK_PIPELINE_LOG
 } from '../constants/mockData';
 
 const AppContext = createContext();
@@ -20,6 +23,12 @@ export const AppProvider = ({ children }) => {
   const [rules, setRules] = useState([]);
   const [pushHistory, setPushHistory] = useState([]);
   const [pushTemplates, setPushTemplates] = useState([]);
+  
+  // Pipeline state
+  const [dataSources, setDataSources] = useState([]);
+  const [enrichmentJobs, setEnrichmentJobs] = useState([]);
+  const [pipelineLog, setPipelineLog] = useState([]);
+  
   const [loading, setLoading] = useState(true);
 
   // Helper to transform snake_case to camelCase
@@ -83,6 +92,11 @@ export const AppProvider = ({ children }) => {
 
         if (templatesData?.length > 0) setPushTemplates(transformFromSupabase(templatesData));
         else setPushTemplates(MOCK_TEMPLATES);
+
+        // Fallback to MOCK data instead of querying non-existent Supabase tables
+        setDataSources(MOCK_DATA_SOURCES);
+        setEnrichmentJobs(MOCK_ENRICHMENT_JOBS);
+        setPipelineLog(MOCK_PIPELINE_LOG);
         
       } catch (error) {
         console.error('Error fetching data from Supabase:', error);
@@ -92,6 +106,9 @@ export const AppProvider = ({ children }) => {
         setRules(MOCK_RULES);
         setPushHistory(MOCK_HISTORY);
         setPushTemplates(MOCK_TEMPLATES);
+        setDataSources(MOCK_DATA_SOURCES);
+        setEnrichmentJobs(MOCK_ENRICHMENT_JOBS);
+        setPipelineLog(MOCK_PIPELINE_LOG);
       } finally {
         setLoading(false);
       }
@@ -179,6 +196,48 @@ export const AppProvider = ({ children }) => {
     if (error) console.error('Supabase Error:', error);
   };
 
+  const addSource = async (source) => {
+    setDataSources(prev => [...prev, source]);
+    const { error } = await supabase.from('data_sources').insert(transformToSupabase(source));
+    if (error) console.error('Supabase Error:', error);
+  };
+  
+  const updateSource = async (id, data) => {
+    setDataSources(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
+    const { error } = await supabase.from('data_sources').update(transformToSupabase(data)).eq('id', id);
+    if (error) console.error('Supabase Error:', error);
+  };
+  
+  const deleteSource = async (id) => {
+    setDataSources(prev => prev.filter(s => s.id !== id));
+    const { error } = await supabase.from('data_sources').delete().eq('id', id);
+    if (error) console.error('Supabase Error:', error);
+  };
+
+  const addJob = async (job) => {
+    setEnrichmentJobs(prev => [...prev, job]);
+    const { error } = await supabase.from('enrichment_jobs').insert(transformToSupabase(job));
+    if (error) console.error('Supabase Error:', error);
+  };
+  
+  const updateJob = async (id, data) => {
+    setEnrichmentJobs(prev => prev.map(j => j.id === id ? { ...j, ...data } : j));
+    const { error } = await supabase.from('enrichment_jobs').update(transformToSupabase(data)).eq('id', id);
+    if (error) console.error('Supabase Error:', error);
+  };
+  
+  const deleteJob = async (id) => {
+    setEnrichmentJobs(prev => prev.filter(j => j.id !== id));
+    const { error } = await supabase.from('enrichment_jobs').delete().eq('id', id);
+    if (error) console.error('Supabase Error:', error);
+  };
+
+  const addLogEntry = async (log) => {
+    setPipelineLog(prev => [log, ...prev]);
+    const { error } = await supabase.from('pipeline_logs').insert(transformToSupabase(log));
+    if (error) console.error('Supabase Error:', error);
+  };
+
 
   const value = {
     segments, addSegment, updateSegment, deleteSegment,
@@ -187,6 +246,9 @@ export const AppProvider = ({ children }) => {
     rules, addRule, updateRule, deleteRule,
     pushHistory, addPushHistory,
     pushTemplates, setPushTemplates,
+    dataSources, addSource, updateSource, deleteSource,
+    enrichmentJobs, addJob, updateJob, deleteJob,
+    pipelineLog, addLogEntry, setPipelineLog, // exposing setPipelineLog to easily "clear logs" entirely in local UI
     loading
   };
 

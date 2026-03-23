@@ -14,6 +14,7 @@ import PushNotificationPage from './pages/PushNotificationPage';
 import RecommendationsPage from './pages/RecommendationsPage';
 import ReportsPage from './pages/ReportsPage';
 import OverviewDashboardPage from './pages/OverviewDashboardPage';
+import DataPipelinePage from './pages/DataPipelinePage';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/dynamic-content" element={<DynamicContentPage />} />
               <Route path="/push-notifications" element={<PushNotificationPage />} />
               <Route path="/recommendations" element={<RecommendationsPage />} />
+              <Route path="/data-pipeline" element={<DataPipelinePage />} />
               <Route path="/reports" element={<ReportsPage />} />
             </Routes>
           </div>

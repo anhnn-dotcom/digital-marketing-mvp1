@@ -211,3 +211,30 @@ export const PUSH_TEMPLATES = [
   { id: 'pt_4', campaignId: 'CAM-TH-004', campaign: 'MicroPay — Flash Deal Friday', title: 'Flash Deal วันนี้เท่านั้น! ⚡', body: 'ร้านพาร์ทเนอร์ให้ส่วนลดพิเศษวันนี้ จ่ายด้วย MicroPay', trigger: 'URL → merchant flash deal page', segmentId: 'seg_11', segment: 'Core Target — Urban Transactors' },
   { id: 'pt_5', campaignId: 'CAM-TH-007', campaign: 'MicroPay — Refer a Friend Phase 3', title: 'แนะนำเพื่อน รับ ฿30 ทั้งคู่! 🎁', body: 'เพื่อนคุณยังไม่ใช้ MicroPay? แชร์โค้ดได้เลย', trigger: 'createRequest', segmentId: 'seg_16', segment: 'Referral Eligible — Phase 3' }
 ];
+
+export const DATA_SOURCES = [
+  { id: 'ds_1', name: 'Salesforce CRM', type: 'CRM', status: 'Connected', recordCount: 845000, lastSync: '10 mins ago', syncFrequency: 'Real-time', fieldsCount: 45 },
+  { id: 'ds_2', name: 'Core Banking Logs', type: 'Transactions', status: 'Connected', recordCount: 15420000, lastSync: '1 hour ago', syncFrequency: 'Hourly', fieldsCount: 18 },
+  { id: 'ds_3', name: 'Loyalty Management System', type: 'Loyalty', status: 'Connected', recordCount: 1200000, lastSync: '2 hours ago', syncFrequency: 'every 6 hours', fieldsCount: 22 },
+  { id: 'ds_4', name: 'Mobile App Events', type: 'App Events', status: 'Error', recordCount: 4500000, lastSync: '1 day ago', syncFrequency: 'Real-time', fieldsCount: 12 },
+  { id: 'ds_5', name: 'Customer Support Tickets', type: 'Custom', status: 'Disconnected', recordCount: 89000, lastSync: '7 days ago', syncFrequency: 'Daily', fieldsCount: 8 },
+  { id: 'ds_6', name: 'Offline Store Purchases', type: 'Manual Upload', status: 'Connected', recordCount: 34000, lastSync: '2 days ago', syncFrequency: 'Weekly', fieldsCount: 15 }
+];
+
+export const ENRICHMENT_JOBS = [
+  { id: 'job_1', name: 'Daily Lifetime Value Scoring', sourceIds: ['ds_2', 'ds_3'], outputDataset: 'Customer Profile', schedule: 'Daily at 02:00', status: 'Completed', lastRun: '6 hours ago', nextRun: 'Tomorrow 02:00', recordsProcessed: 1200000, recordsEnriched: 1185000, enrichmentRate: '98.7%', type: 'Score' },
+  { id: 'job_2', name: 'Real-time Churn Prediction', sourceIds: ['ds_4', 'ds_2'], outputDataset: 'Customer Profile', schedule: 'Every 5 mins', status: 'Running', lastRun: '3 mins ago', nextRun: 'in 2 mins', recordsProcessed: 45000, recordsEnriched: 45000, enrichmentRate: '100%', type: 'Score' },
+  { id: 'job_3', name: 'Merge Offline Purchases', sourceIds: ['ds_6'], outputDataset: 'Transaction Behavior', schedule: 'Weekly on Sunday 00:00', status: 'Completed', lastRun: '2 days ago', nextRun: 'in 5 days', recordsProcessed: 34000, recordsEnriched: 32500, enrichmentRate: '95.5%', type: 'Merge' },
+  { id: 'job_4', name: 'Cleanse Support Ticket Tags', sourceIds: ['ds_5'], outputDataset: 'Customer Profile', schedule: 'Daily at 03:00', status: 'Paused', lastRun: '1 week ago', nextRun: 'Paused', recordsProcessed: 89000, recordsEnriched: 89000, enrichmentRate: '100%', type: 'Transform' },
+  { id: 'job_5', name: 'Deduplicate CRM Contacts', sourceIds: ['ds_1'], outputDataset: 'Customer Profile', schedule: 'Monthly on 1st', status: 'Scheduled', lastRun: 'Mar 1, 2026', nextRun: 'Apr 1, 2026', recordsProcessed: 845000, recordsEnriched: 842000, enrichmentRate: '99.6%', type: 'Deduplicate' },
+  { id: 'job_6', name: 'Sync App Events to Engagement', sourceIds: ['ds_4'], outputDataset: 'App Engagement', schedule: 'Hourly', status: 'Failed', lastRun: '1 hour ago', nextRun: 'Pending Retry', recordsProcessed: 125000, recordsEnriched: 0, enrichmentRate: '0%', type: 'Merge' }
+];
+
+export const PIPELINE_ACTIVITY_LOG = [
+  { id: 'log_1', timestamp: new Date(Date.now() - 10 * 60000).toISOString(), type: 'sync', source: 'Salesforce CRM', message: 'Sync completed successfully', details: 'Ingested 1,500 new records and updated 4,200 existing.' },
+  { id: 'log_2', timestamp: new Date(Date.now() - 25 * 60000).toISOString(), type: 'job', source: 'Real-time Churn Prediction', message: 'Job completed', details: 'Scored 45,000 users. Found 234 high-risk users.' },
+  { id: 'log_3', timestamp: new Date(Date.now() - 60 * 60000).toISOString(), type: 'error', source: 'Sync App Events to Engagement', message: 'Job failed due to connection error', details: 'Timeout after 30000ms connecting to App Events stream.' },
+  { id: 'log_4', timestamp: new Date(Date.now() - 65 * 60000).toISOString(), type: 'sync', source: 'Core Banking Logs', message: 'Sync completed successfully', details: 'Ingested 45,000 transaction records.' },
+  { id: 'log_5', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), type: 'job', source: 'Daily Lifetime Value Scoring', message: 'Job completed successfully', details: 'Updated LTV scores for 1,185,000 profiles.' },
+  { id: 'log_6', timestamp: new Date(Date.now() - 180 * 60000).toISOString(), type: 'info', source: 'Customer Support Tickets', message: 'Source connection paused manually', details: 'User admin@micropay.com paused the connection.' }
+];
