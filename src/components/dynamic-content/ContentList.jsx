@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Plus, MoreVertical, Image as ImageIcon } from 'lucide-react';
 import { DYNAMIC_CONTENTS } from '../../constants/mockData';
 import Button from '../ui/Button';
@@ -7,6 +8,7 @@ import Badge from '../ui/Badge';
 import ActionsMenu from '../ui/ActionsMenu';
 
 export default function ContentList({ onCreateContent, onEditContent }) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -33,6 +35,32 @@ export default function ContentList({ onCreateContent, onEditContent }) {
       case 'draft': return <Badge variant="yellow">Draft</Badge>;
       default: return <Badge variant="gray">{status}</Badge>;
     }
+  };
+
+  const FatigueStatus = ({ name }) => {
+    const isHealthy = name.length % 4 === 0;
+    const isDeclining = name.length % 4 === 1;
+    const isFatigued = name.length % 4 === 2;
+    // else new
+    
+    let dotColor = 'bg-gray-300';
+    let label = 'New';
+    let tooltip = 'Live < 7 days · Insufficient data';
+    
+    if (isHealthy) { dotColor = 'bg-green-500'; label = 'Healthy'; tooltip = 'Week 1 CTR: 24.1% · Current CTR: 23.5% · Stable'; }
+    if (isDeclining) { dotColor = 'bg-amber-500'; label = 'Declining'; tooltip = 'Week 1 CTR: 18.2% · Current CTR: 12.5% · Drop: 31%'; }
+    if (isFatigued) { dotColor = 'bg-red-500'; label = 'Fatigued'; tooltip = 'Week 1 CTR: 24.1% · Current CTR: 11.2% · Drop: 53%'; }
+    
+    return (
+      <div className="relative flex items-center gap-2 group w-fit cursor-help">
+        <div className={`w-2 h-2 rounded-full ${dotColor}`}></div>
+        <span className="text-sm text-[#475569] font-medium">{label}</span>
+        <div className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity px-2.5 py-1.5 bg-slate-800 text-white text-xs rounded z-50 whitespace-nowrap shadow-lg pointer-events-none">
+          {tooltip}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800 h-0 w-0" />
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -81,6 +109,7 @@ export default function ContentList({ onCreateContent, onEditContent }) {
                 <th className="px-6 py-4 font-medium">Linked Campaign</th>
                 <th className="px-6 py-4 font-medium">Segment</th>
                 <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium">Fatigue Status</th>
                 <th className="px-6 py-4 font-medium">Updated</th>
                 <th className="px-6 py-4 font-medium text-right">Actions</th>
               </tr>
@@ -102,12 +131,14 @@ export default function ContentList({ onCreateContent, onEditContent }) {
                     </span>
                   </td>
                   <td className="px-6 py-4">{getStatusBadge(item.status)}</td>
+                  <td className="px-6 py-4"><FatigueStatus name={item.name} /></td>
                   <td className="px-6 py-4 text-[#64748B] text-xs">{item.updated}</td>
                   <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
                     <ActionsMenu 
                       options={[
                         { label: 'Preview', onClick: () => {} },
                         { label: 'Edit', onClick: () => onEditContent ? onEditContent(item) : onCreateContent() },
+                        { label: 'Fatigue Analysis', onClick: () => navigate('/optimize#fatigue') },
                         { label: 'Duplicate', onClick: () => {} },
                         { label: 'Link to Campaign', onClick: () => {} },
                         { type: 'divider' },

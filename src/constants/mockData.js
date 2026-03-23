@@ -238,3 +238,197 @@ export const PIPELINE_ACTIVITY_LOG = [
   { id: 'log_5', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), type: 'job', source: 'Daily Lifetime Value Scoring', message: 'Job completed successfully', details: 'Updated LTV scores for 1,185,000 profiles.' },
   { id: 'log_6', timestamp: new Date(Date.now() - 180 * 60000).toISOString(), type: 'info', source: 'Customer Support Tickets', message: 'Source connection paused manually', details: 'User admin@micropay.com paused the connection.' }
 ];
+
+// ═══════════════════════════════════════════════════════
+// ANALYTICS DASHBOARD DATA
+// ═══════════════════════════════════════════════════════
+
+export const ANALYTICS_KPI = [
+  // Engagement
+  { id: 'kpi_1', group: 'Engagement', title: 'Impressions', value: '284,521', change: '↑ 12.4%', tooltip: 'Total times content was displayed to users', color: null },
+  { id: 'kpi_2', group: 'Engagement', title: 'Clicks', value: '35,281', change: '↑ 8.7%', tooltip: 'Total taps on banners, popups, or push notifications', color: null },
+  { id: 'kpi_3', group: 'Engagement', title: 'CTR', value: '12.4%', change: '↑ 0.8pp', tooltip: 'Clicks ÷ Impressions. Platform avg: 11.2%', color: 'green' },
+  { id: 'kpi_4', group: 'Engagement', title: 'Unique Members Reached', value: '28,450', change: '↑ 5.3%', tooltip: 'Distinct members who saw at least 1 piece of content', color: null },
+  // Conversion
+  { id: 'kpi_5', group: 'Conversion & Revenue', title: 'Conversions', value: '9,123', change: '↑ 22.1%', tooltip: 'Members who completed target action after clicking', color: null },
+  { id: 'kpi_6', group: 'Conversion & Revenue', title: 'CVR', value: '25.9%', change: '↑ 3.2pp', tooltip: 'Conversions ÷ Clicks', color: 'green' },
+  { id: 'kpi_7', group: 'Conversion & Revenue', title: 'Revenue Attributed', value: '฿2,847,500', change: '↑ 18.3%', tooltip: 'Total transaction value from converted members within 7-day window', color: null },
+  { id: 'kpi_8', group: 'Conversion & Revenue', title: 'ROAS', value: '3.8×', change: '↑ 0.6×', tooltip: 'Revenue Attributed ÷ Campaign Spend', color: 'green', target: 'Target: 3.2×' },
+  // Unit Economics
+  { id: 'kpi_9', group: 'Unit Economics', title: 'CAC', value: '฿68.40', change: '↓ 8.2%', tooltip: 'Total spend ÷ new active transactors acquired', color: 'green', target: 'Target: ≤ ฿85' },
+  { id: 'kpi_10', group: 'Unit Economics', title: 'Avg Member LTV', value: '฿1,240', change: '↑ 4.1%', tooltip: 'Average transaction value per member over 90 days', color: null },
+  { id: 'kpi_11', group: 'Unit Economics', title: 'LTV:CAC Ratio', value: '18.1×', change: '↑ 2.3×', tooltip: 'LTV ÷ CAC. Healthy ratio: > 3×', color: 'green' },
+  { id: 'kpi_12', group: 'Unit Economics', title: 'Avg Transactions/User/Week', value: '4.3', change: '↑ 22.9%', tooltip: 'Target: 5.2 by end of campaign', color: null, progress: { current: 4.3, target: 5.2 } },
+];
+
+export const ANALYTICS_FUNNEL = [
+  { id: 'funnel_1', label: 'Reached', value: '28,450', percent: '100%', fraction: '20/20' },
+  { id: 'funnel_2', label: 'Impressions', value: '24,180', percent: '85%', fraction: '17/20' },
+  { id: 'funnel_3', label: 'Clicks', value: '3,528', percent: '12.4% CTR', fraction: '12/20' },
+  { id: 'funnel_4', label: 'Conversions', value: '914', percent: '25.9% CVR', fraction: '5/20' },
+  { id: 'funnel_5', label: 'Repeat Conv', value: '412', percent: '45.1% ret', fraction: '4/20' },
+];
+
+export const ANALYTICS_ATTRIBUTION = [
+  { id: 'attr_1', channel: 'Push Notification', touches: '48,210', ast: '3,842', dir: '2,814', revAst: '฿921,400', revDir: '฿674,200', attr: '38%', navigateTo: '/push' },
+  { id: 'attr_2', channel: 'Popup', touches: '39,140', ast: '2,891', dir: '1,923', revAst: '฿693,800', revDir: '฿461,200', attr: '31%', navigateTo: '/content' },
+  { id: 'attr_3', channel: 'Banner', touches: '28,420', ast: '1,842', dir: '891', revAst: '฿441,800', revDir: '฿213,800', attr: '22%', navigateTo: '/content' },
+  { id: 'attr_4', channel: 'Recommendation', touches: '9,210', ast: '1,203', dir: '495', revAst: '฿288,700', revDir: '฿118,800', attr: '9%', navigateTo: null },
+];
+
+export const ANALYTICS_CAMPAIGN_REVENUE = [
+  { id: 'rev_1', label: 'Gold Win-Back', value: '฿847,200', widthPct: 100, campaignId: 'cmp_1' },
+  { id: 'rev_2', label: 'Points Expiry', value: '฿423,600', widthPct: 50, campaignId: 'cmp_2' },
+  { id: 'rev_3', label: 'Loan Retargeting', value: '฿389,100', widthPct: 45, campaignId: 'cmp_3' },
+  { id: 'rev_4', label: 'Bangkok Promo', value: '฿312,400', widthPct: 37, campaignId: 'cmp_4' },
+  { id: 'rev_5', label: 'Streak Bonus', value: '฿287,500', widthPct: 33, campaignId: 'cmp_5' },
+  { id: 'rev_6', label: 'Tier Upgrade', value: '฿201,300', widthPct: 24, campaignId: 'cmp_6' },
+  { id: 'rev_7', label: 'Referral Program', value: '฿189,200', widthPct: 22, campaignId: 'cmp_7' },
+  { id: 'rev_8', label: 'Dormant React.', value: '฿197,200', widthPct: 23, campaignId: 'cmp_8' },
+];
+
+export const ANALYTICS_CAMPAIGN_TARGETS = [
+  { id: 'tgt_1', label: 'Weekly Active Transactors', current: '+24%', target: '+35%', percent: 69. },
+  { id: 'tgt_2', label: 'Streak Completion Rate', current: '28%', target: '≥30%', percent: 93 },
+  { id: 'tgt_3', label: 'Cashback Redemption', current: '71%', target: '≥65%', percent: 100, check: true },
+  { id: 'tgt_4', label: 'Referral Conversion', current: '19%', target: '≥25%', percent: 76 },
+];
+
+export const ANALYTICS_SUGGESTED_ACTIONS = [
+  { id: 'sa_1', impact: 'high', title: 'Gold Win-Back push copy', desc: 'CTR ↓ 8pp compared to last week', navigateTo: '/optimize' },
+  { id: 'sa_2', impact: 'medium', title: 'Points Expiry send time', desc: 'Shift to 08:30 for +15% open rate', navigateTo: '/optimize' },
+  { id: 'sa_3', impact: 'medium', title: 'Lapsed banner creative', desc: 'Replace image to combat ad fatigue', navigateTo: '/optimize' },
+];
+
+// ═══════════════════════════════════════════════════════
+// AUDIENCE INSIGHTS DATA
+// ═══════════════════════════════════════════════════════
+
+export const AUDIENCE_SEGMENTS = [
+  { id: 'gold-at-risk', name: 'Gold & Platinum — At Risk', count: '3,847', active: true, colors: ['bg-[#38BDF8]', 'bg-[#F472B6]', 'bg-[#A78BFA]'], campaignIds: ['cmp_1', 'cmp_2', 'cmp_3'] },
+  { id: 'vip-churning', name: 'VIP Churning — Priority', count: '1,204', active: true, colors: ['bg-[#38BDF8]', 'bg-[#F472B6]'], campaignIds: ['cmp_4'] },
+  { id: 'lapsed', name: 'Lapsed Users (90+ Days)', count: '18,421', active: true, colors: ['bg-[#38BDF8]'], campaignIds: ['cmp_9'] },
+  { id: 'flash-deal', name: 'Flash Deal Engagers', count: '8,920', active: true, colors: ['bg-[#A78BFA]'], campaignIds: ['CAM-TH-004'] },
+  { id: 'dormant', name: 'Dormant Base (12mo)', count: '42,190', active: false, colors: ['bg-[#94A3B8]'], campaignIds: [] },
+];
+
+export const AUDIENCE_STAT_CARDS = [
+  { id: 'astat_1', segmentId: 'gold-at-risk', title: 'Avg Points Balance', value: '4,230 pts', trend: '↑ 12%' },
+  { id: 'astat_2', segmentId: 'gold-at-risk', title: 'Avg Tier', value: 'Gold / Plat', sub: '72% / 28%' },
+  { id: 'astat_3', segmentId: 'gold-at-risk', title: 'Avg Days Inactive', value: '74 days', trend: '↑ 4d', downIsBad: true },
+  { id: 'astat_4', segmentId: 'gold-at-risk', title: 'Avg Transaction Value', value: '฿2,840/mo', trend: '↓ 14%', downIsBad: true },
+];
+
+export const AUDIENCE_MEMBERS = [
+  { id: 'TH-001234', segmentId: 'gold-at-risk', name: 'Somchai P.', tier: 'Gold', pts: '5,420', last: 'Jan 12', days: '70d', push: true, status: 'At Risk' },
+  { id: 'TH-001891', segmentId: 'gold-at-risk', name: 'Nattaporn K.', tier: 'Platinum', pts: '8,920', last: 'Jan 8', days: '74d', push: true, status: 'At Risk' },
+  { id: 'TH-002341', segmentId: 'gold-at-risk', name: 'Wiroj S.', tier: 'Gold', pts: '3,210', last: 'Jan 15', days: '67d', push: false, status: 'At Risk' },
+  { id: 'TH-003102', segmentId: 'gold-at-risk', name: 'Pranee L.', tier: 'Gold', pts: '6,780', last: 'Jan 3', days: '79d', push: true, status: 'At Risk' },
+  { id: 'TH-004521', segmentId: 'gold-at-risk', name: 'Apinya T.', tier: 'Gold', pts: '4,120', last: 'Jan 20', days: '62d', push: true, status: 'At Risk' },
+  { id: 'TH-005832', segmentId: 'gold-at-risk', name: 'Kamon W.', tier: 'Platinum', pts: '12,340', last: 'Dec 28', days: '85d', push: true, status: 'Critical' },
+  { id: 'TH-006291', segmentId: 'gold-at-risk', name: 'Siriporn N.', tier: 'Gold', pts: '2,890', last: 'Jan 18', days: '64d', push: false, status: 'At Risk' },
+  { id: 'TH-007445', segmentId: 'gold-at-risk', name: 'Thanakorn B.', tier: 'Gold', pts: '7,650', last: 'Jan 5', days: '77d', push: true, status: 'At Risk' },
+  { id: 'TH-008123', segmentId: 'gold-at-risk', name: 'Ladda M.', tier: 'Platinum', pts: '9,210', last: 'Dec 31', days: '82d', push: true, status: 'Critical' },
+  { id: 'TH-009341', segmentId: 'gold-at-risk', name: 'Prayut C.', tier: 'Gold', pts: '3,450', last: 'Jan 22', days: '60d', push: true, status: 'At Risk' },
+  { id: 'TH-010124', segmentId: 'vip-churning', name: 'Wilasinee T.', tier: 'Platinum', pts: '15,200', last: 'Dec 15', days: '98d', push: true, status: 'Critical' },
+  { id: 'TH-011234', segmentId: 'vip-churning', name: 'Chaiwat P.', tier: 'Platinum', pts: '11,800', last: 'Dec 20', days: '93d', push: false, status: 'Critical' },
+  { id: 'TH-012345', segmentId: 'lapsed', name: 'Preecha L.', tier: 'Silver', pts: '1,200', last: 'Nov 10', days: '133d', push: true, status: 'Lapsed' },
+  { id: 'TH-013456', segmentId: 'lapsed', name: 'Somsri K.', tier: 'Silver', pts: '890', last: 'Oct 28', days: '146d', push: false, status: 'Lapsed' },
+];
+
+export const AUDIENCE_CAMPAIGN_HISTORY = [
+  { id: 'ach_1', segmentId: 'gold-at-risk', campaignId: 'cmp_1', campaign: 'Gold Win-Back', period: 'Mar 1–23', impressions: '48,200', ctr: '20.0%', ctrStatus: 'good', cvr: '24.1%', revenue: '฿847,200', roas: '4.1×', roasStatus: 'good' },
+  { id: 'ach_2', segmentId: 'gold-at-risk', campaignId: 'cmp_2', campaign: 'Points Expiry', period: 'Feb 15–28', impressions: '38,100', ctr: '12.4%', ctrStatus: 'neutral', cvr: '18.9%', revenue: '฿423,600', roas: '2.8×', roasStatus: 'neutral' },
+  { id: 'ach_3', segmentId: 'gold-at-risk', campaignId: 'cmp_3', campaign: 'Dormant Reactivation', period: 'Jan 10–31', impressions: '35,000', ctr: '6.2%', ctrStatus: 'bad', cvr: '15.1%', revenue: '฿197,200', roas: '1.2×', roasStatus: 'bad' },
+  { id: 'ach_4', segmentId: 'vip-churning', campaignId: 'cmp_4', campaign: 'VIP Churn Prevention', period: 'Mar 10–23', impressions: '5,200', ctr: '31.4%', ctrStatus: 'good', cvr: '28.0%', revenue: '฿312,000', roas: '5.2×', roasStatus: 'good' },
+  { id: 'ach_5', segmentId: 'lapsed', campaignId: 'cmp_9', campaign: 'Dormant Reactivation Q1', period: 'Jan 1–Mar 23', impressions: '42,100', ctr: '9.0%', ctrStatus: 'neutral', cvr: '9.0%', revenue: '฿189,200', roas: '1.8×', roasStatus: 'neutral' },
+];
+
+// ═══════════════════════════════════════════════════════
+// CAMPAIGN OPTIMIZATION DATA
+// ═══════════════════════════════════════════════════════
+
+export const OPTIMIZATION_SUGGESTIONS = [
+  {
+    id: 'sug_1', impact: 'high', campaignId: 'cmp_1', campaign: 'Gold Win-Back',
+    issue: 'Push CTR dropped from 28% → 19% over 7 days. Classic content fatigue pattern.',
+    fix: 'Rotate push copy to Variation B: \'คุณมี {pts_balance} points ที่ยังไม่ได้ใช้ 🎁\'',
+    lift: '+8–12% CTR', confidence: '87%', data: 'Based on 12 similar campaigns', actionKey: 'push_copy', status: 'pending'
+  },
+  {
+    id: 'sug_2', impact: 'high', campaignId: 'cmp_2', campaign: 'Points Expiry Push',
+    issue: 'Send time 10:00 suboptimal for this target segment.',
+    fix: 'Shift to 08:30 (peak open time for segment).',
+    lift: '+15% open rate', confidence: '91%', data: 'Segment opens push 3× more at 08:00–09:00', actionKey: 'send_time', status: 'pending'
+  },
+  {
+    id: 'sug_3', impact: 'medium', campaignId: 'CAM-TH-004', campaign: 'Flash Deal Friday',
+    issue: 'Segment overlap with Gold Win-Back. 234 members receiving both campaigns same day.',
+    fix: 'Exclude \'Gold At Risk\' segment from Flash Deal or apply 4h gap between sends.',
+    lift: 'Reduce unsubscribe risk', confidence: '95%', data: 'Prevent frequency cap violation', actionKey: 'exclude', status: 'pending'
+  },
+  {
+    id: 'sug_4', impact: 'medium', campaignId: 'CAM-TH-002', campaign: 'Lapsed User Win-back',
+    issue: 'Popup CTR 6.2% (below 11.2% platform avg).',
+    fix: 'Replace current banner with urgency creative: \'ฟรี ฿30 cashback สำหรับการจ่ายครั้งแรก\'',
+    lift: '+6–9% CTR', confidence: '74%', data: 'A/B tested winner in Q3', actionKey: 'replace_banner', status: 'pending'
+  },
+  {
+    id: 'sug_5', impact: 'medium', campaignId: 'CAM-TH-003', campaign: 'Streak Bonus Campaign',
+    issue: 'Streak completion 28% vs 30% target.',
+    fix: 'Add SMS/LINE reminder at 21:00 for members who haven\'t transacted by evening.',
+    lift: '+4–6pp compl. rate', confidence: '68%', data: 'Similar mechanic lifted completion by 15% last month', actionKey: 'add_reminder', status: 'pending'
+  },
+  {
+    id: 'sug_6', impact: 'low', campaignId: 'cmp_8', campaign: 'Bangkok Urban Promo',
+    issue: 'Recommendation CTR 9% on Home Screen.',
+    fix: 'Move recommendation to \'After Login\' placement.',
+    lift: '+3–5% CTR', confidence: '61%', data: 'Data confidence building', actionKey: 'move_placement', status: 'pending'
+  },
+];
+
+export const AB_TESTS = [
+  {
+    id: 'abt_1', campaignId: 'cmp_1', campaign: 'Gold Member Win-Back', channel: 'Push Notification',
+    status: 'Day 4 of 7', daysLeft: 3, significance: '94%', winner: 'Variant B', autoDeploy: true,
+    variantA: { name: 'Generic cashback', ctr: '19.2%', cvr: '22.1%', widthPct: 60, isLeading: false },
+    variantB: { name: 'Personalized (points)', ctr: '27.8%', cvr: '31.4%', widthPct: 85, isLeading: true },
+    testStatus: 'running'
+  },
+  {
+    id: 'abt_2', campaignId: 'cmp_7', campaign: 'Loan Retargeting', channel: 'Banner Image',
+    status: 'Day 6 of 7', daysLeft: 1, significance: '81%', winner: 'Variant B', autoDeploy: true,
+    variantA: { name: 'Product feature image', ctr: '11.4%', cvr: '12.0%', widthPct: 40, isLeading: false },
+    variantB: { name: 'Lifestyle/emotional image', ctr: '14.2%', cvr: '15.1%', widthPct: 50, isLeading: true },
+    warning: 'Low confidence, maybe extend',
+    testStatus: 'running'
+  },
+  {
+    id: 'abt_3', campaignId: 'CAM-TH-003', campaign: 'Streak Bonus', channel: 'Send Time',
+    status: 'Day 2 of 7', daysLeft: 5, significance: '89%', winner: 'Variant A', autoDeploy: true,
+    variantA: { name: '08:00 send', ctr: '31.2%', cvr: '42.0%', widthPct: 90, isLeading: true },
+    variantB: { name: '12:00 send', ctr: '24.8%', cvr: '36.5%', widthPct: 75, isLeading: false },
+    testStatus: 'running'
+  },
+];
+
+export const FATIGUE_ALERTS = [
+  { id: 'fat_1', name: 'Gold Win-Back Banner', campaignId: 'cmp_1', campaign: 'Gold Win-Back', daysLive: '22d', ctrWeek1: '24.1%', ctrNow: '11.2%', drop: '53%', status: 'bad' },
+  { id: 'fat_2', name: 'Streak Popup', campaignId: 'CAM-TH-003', campaign: 'Streak Bonus', daysLive: '8d', ctrWeek1: '31.4%', ctrNow: '28.9%', drop: '8%', status: 'good' },
+  { id: 'fat_3', name: 'Lapsed Banner', campaignId: 'CAM-TH-002', campaign: 'Win-back', daysLive: '22d', ctrWeek1: '8.1%', ctrNow: '6.2%', drop: '23%', status: 'warn' },
+  { id: 'fat_4', name: 'Flash Deal Push', campaignId: 'CAM-TH-004', campaign: 'Flash Deal', daysLive: '4d', ctrWeek1: '18.4%', ctrNow: '16.1%', drop: '12%', status: 'good' },
+  { id: 'fat_5', name: 'Default App Banner', campaignId: null, campaign: '—', daysLive: '31d', ctrWeek1: '12.4%', ctrNow: '4.1%', drop: '67%', status: 'bad' },
+];
+
+export const OPTIMIZATION_HISTORY = [
+  { id: 'oh_1', time: 'Mar 23 14:30', desc: 'Replaced banner in Lapsed Win-back campaign', user: 'AI Auto-apply' },
+  { id: 'oh_2', time: 'Mar 22 09:00', desc: 'A/B Test deployed: Variant B (Loan Banner) won (+2.8% CTR)', user: 'System' },
+  { id: 'oh_3', time: 'Mar 21 16:45', desc: 'Frequency cap updated: Gold At Risk → 3/day', user: 'Nam A.' },
+  { id: 'oh_4', time: 'Mar 20 10:00', desc: 'Flash Deal Friday segment narrowed (excluded VIP overlap)', user: 'AI Auto-apply' },
+];
+
+export const FREQUENCY_OVERRIDES = [
+  { id: 'fo_1', segment: 'Gold At Risk', maxPerDay: 3, maxPerWeek: 7, cooldown: '24h', context: 'High-value, higher frequency OK' },
+  { id: 'fo_2', segment: 'Lapsed Users', maxPerDay: 1, maxPerWeek: 3, cooldown: '72h', context: 'Sensitive — avoid push-away' },
+  { id: 'fo_3', segment: 'Birthday Segment', maxPerDay: 5, maxPerWeek: 5, cooldown: '0h', context: 'Time-sensitive, burst OK on day' },
+];

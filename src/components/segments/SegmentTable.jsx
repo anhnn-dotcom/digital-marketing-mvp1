@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Badge from '../ui/Badge';
 import Toggle from '../ui/Toggle';
 import ActionsMenu from '../ui/ActionsMenu';
@@ -10,6 +11,7 @@ const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num);
 
 export default function SegmentTable({ segments, onDelete, onEdit, onDuplicate, onSync, onToggleStatus, onView, onViewCampaigns }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const filteredSegments = segments.filter(seg => 
     seg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,11 +86,41 @@ export default function SegmentTable({ segments, onDelete, onEdit, onDuplicate, 
     );
   };
 
+  const HealthColumn = ({ row }) => {
+    const isGreen = row.name.length % 3 === 0 || row.name.includes('At Risk');
+    const isAmber = row.name.length % 3 === 1;
+    const typeofLength = row.name.length;
+    const dotColor = isGreen ? 'bg-green-500' : isAmber ? 'bg-amber-500' : 'bg-red-500';
+    const tooltipText = isGreen ? 'Last sync 2h ago · CTR healthy' : isAmber ? 'Synced > 3 days OR CTR declining' : 'Synced > 7 days OR CTR < 8%';
+    
+    return (
+      <div className="relative flex justify-start pl-2 group w-full">
+        <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`}></div>
+        <div className="absolute left-6 -top-2 opacity-0 group-hover:opacity-100 transition-opacity px-2.5 py-1 bg-slate-800 text-white text-xs rounded z-50 whitespace-nowrap shadow-lg pointer-events-none">
+          {tooltipText}
+        </div>
+      </div>
+    );
+  };
+
+  const AvgCtrColumn = ({ row }) => {
+    const isGreen = row.name.length % 3 === 0 || row.name.includes('At Risk');
+    const isAmber = row.name.length % 3 === 1;
+    const val = isGreen ? '20.0%' : isAmber ? '9.2%' : '6.4%';
+    const color = isGreen ? 'text-green-600' : isAmber ? 'text-amber-600' : 'text-red-500';
+    
+    return (
+      <div className={`font-semibold ${color}`}>
+        {val}
+      </div>
+    );
+  };
+
   const columns = [
     {
       header: 'Name',
       accessorKey: 'name',
-      width: '30%',
+      width: '25%',
       cell: (row) => (
         <div>
           <div className="font-semibold text-[#0F172A] hover:text-[#2563EB] cursor-pointer transition-colors" onClick={() => onView(row)}>
@@ -105,19 +137,31 @@ export default function SegmentTable({ segments, onDelete, onEdit, onDuplicate, 
     {
       header: 'Datasets',
       accessorKey: 'datasets',
-      width: '25%',
+      width: '20%',
       cell: (row) => <DatasetPills datasets={row.datasets} />
     },
     {
       header: 'Members',
       accessorKey: 'memberCount',
-      width: '15%',
+      width: '10%',
       cell: (row) => (
         <div className="flex items-center font-medium text-[#0F172A]">
           {formatNumber(row.memberCount)}
           {getSparklineOrTrend(row.memberCount)}
         </div>
       )
+    },
+    {
+      header: 'Avg CTR',
+      accessorKey: 'avgCtr',
+      width: '10%',
+      cell: (row) => <AvgCtrColumn row={row} />
+    },
+    {
+      header: 'Health',
+      accessorKey: 'health',
+      width: '10%',
+      cell: (row) => <HealthColumn row={row} />
     },
     {
       header: 'Auto-Sync',
@@ -150,7 +194,7 @@ export default function SegmentTable({ segments, onDelete, onEdit, onDuplicate, 
     {
       header: '',
       accessorKey: 'actions',
-      width: '10%',
+      width: '5%',
       cell: (row) => (
         <div className="flex justify-end">
           <ActionsMenu 
@@ -163,6 +207,7 @@ export default function SegmentTable({ segments, onDelete, onEdit, onDuplicate, 
             onDelete={() => onDelete(row)}
             options={[
               { type: 'divider' },
+              { label: 'Insights ↗', onClick: () => navigate('/insights') },
               { label: 'View Campaigns', onClick: () => onViewCampaigns(row) },
               { label: 'View Performance', onClick: () => {} }
             ]}

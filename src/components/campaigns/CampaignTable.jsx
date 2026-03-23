@@ -1,18 +1,36 @@
 import { useState } from 'react';
-import { Clock, Calendar, Repeat, CheckCircle2, Loader2, StopCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Clock, Calendar, Repeat, CheckCircle2, Loader2, StopCircle, Zap } from 'lucide-react';
 import Badge from '../ui/Badge';
 import ProgressBar from '../ui/ProgressBar';
 import ActionsMenu from '../ui/ActionsMenu';
 import Table from '../ui/Table';
 import SearchBar from '../ui/SearchBar';
 
-export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, onRunNow, onStop, onDuplicate, onToggleStatus }) {
+export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, onRunNow, onStop, onDuplicate, onToggleStatus, selectedIds, onSelectionChange }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const filteredCampaigns = campaigns.filter(cmp => 
     cmp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     cmp.segment.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredCampaigns.length) {
+      onSelectionChange([]);
+    } else {
+      onSelectionChange(filteredCampaigns.map(c => c.id));
+    }
+  };
+
+  const toggleSelectOne = (id) => {
+    if (selectedIds.includes(id)) {
+      onSelectionChange(selectedIds.filter(i => i !== id));
+    } else {
+      onSelectionChange([...selectedIds, id]);
+    }
+  };
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -45,15 +63,69 @@ export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, o
     );
   };
 
+  const CtrCvrColumn = ({ row }) => {
+    if (row.status === 'Scheduled' || row.status === 'Inactive') return <span className="text-[#94A3B8]">—</span>;
+    const isGood = row.name.length % 2 === 0;
+    const isBad = row.name.length % 3 === 0;
+    const ctr = isGood ? '20.0%' : isBad ? '8.2%' : '14.5%';
+    const cvr = isGood ? '24.1%' : isBad ? '12.0%' : '19.8%';
+    const color = isGood ? 'text-[#10B981]' : isBad ? 'text-red-500' : 'text-amber-500';
+    return <span className={`font-semibold ${color}`}>{ctr} / {cvr}</span>;
+  };
+
+  const RoasColumn = ({ row }) => {
+    if (row.status === 'Scheduled' || row.status === 'Inactive') return <span className="text-[#94A3B8]">—</span>;
+    const isGood = row.name.length % 2 === 0;
+    const isBad = row.name.length % 3 === 0;
+    const roas = isGood ? '4.1×' : isBad ? '1.8×' : '2.5×';
+    const color = isGood ? 'text-[#10B981]' : isBad ? 'text-red-500' : 'text-amber-500';
+    return <span className={`font-semibold ${color}`}>{roas}</span>;
+  };
+
   const columns = [
+    {
+      header: (
+        <div className="flex items-center">
+          <input 
+            type="checkbox" 
+            className="w-4 h-4 rounded border-[#E2E8F0] text-[#2563EB] focus:ring-[#2563EB]" 
+            checked={filteredCampaigns.length > 0 && selectedIds.length === filteredCampaigns.length}
+            onChange={toggleSelectAll}
+          />
+        </div>
+      ),
+      accessorKey: 'selection',
+      width: '40px',
+      cell: (row) => (
+        <div className="flex items-center">
+          <input 
+            type="checkbox" 
+            className="w-4 h-4 rounded border-[#E2E8F0] text-[#2563EB] focus:ring-[#2563EB]" 
+            checked={selectedIds.includes(row.id)}
+            onChange={() => toggleSelectOne(row.id)}
+          />
+        </div>
+      )
+    },
     {
       header: 'Name',
       accessorKey: 'name',
-      width: '25%',
+      width: '20%',
       cell: (row) => (
         <div>
           <div className="flex flex-col gap-1 items-start">
-            <span className="font-medium text-[#0F172A]">{row.name}</span>
+            <div className="flex items-center">
+              <span className="font-medium text-[#0F172A]">{row.name}</span>
+              {row.status === 'Running' && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); navigate('/optimize'); }} 
+                  className="ml-2 inline-flex items-center gap-1 bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded border border-amber-200 hover:bg-amber-200 transition-colors"
+                  title="CTR dropping — click to see suggestion"
+                >
+                  1 tip <Zap className="w-3 h-3 text-amber-500" />
+                </button>
+              )}
+            </div>
             <span className={`text-[10px] font-semibold px-2 border rounded-full py-0.5 whitespace-nowrap ${
               row.type === 'DM Delivery' 
                 ? 'bg-[#0891B2] text-white border-transparent' 
@@ -100,6 +172,18 @@ export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, o
       }
     },
     {
+      header: 'CTR / CVR',
+      accessorKey: 'ctrcvr',
+      width: '10%',
+      cell: (row) => <CtrCvrColumn row={row} />
+    },
+    {
+      header: 'ROAS',
+      accessorKey: 'roas',
+      width: '10%',
+      cell: (row) => <RoasColumn row={row} />
+    },
+    {
       header: 'Status',
       accessorKey: 'status',
       width: '10%',
@@ -144,6 +228,11 @@ export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, o
               onToggleStatus={() => onToggleStatus(row)}
               status={row.status}
               onDelete={(row.status === 'Inactive' || row.status === 'Completed') ? () => onDelete(row) : undefined}
+              options={[
+                { type: 'divider' },
+                { label: 'View Analytics ↗', onClick: () => navigate('/analytics') },
+                { label: 'Optimization Tips', onClick: () => navigate('/optimize') }
+              ]}
             />
           )}
         </div>
@@ -165,7 +254,6 @@ export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, o
         </div>
       </div>
       
-      {/* Custom render table rows for running state styling */}
       <div className="w-full overflow-x-auto rounded-lg border border-[#E2E8F0] bg-white shadow-sm">
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-[#F8FAFC] text-[#64748B] border-b border-[#E2E8F0]">
@@ -186,7 +274,7 @@ export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, o
               filteredCampaigns.map((row) => (
                 <tr 
                   key={row.id}
-                  className={`transition-colors group ${row.status === 'Running' ? 'bg-[#EFF6FF]' : 'hover:bg-[#F8FAFC]'}`}
+                  className={`transition-colors group ${selectedIds.includes(row.id) ? 'bg-[#EFF6FF]' : row.status === 'Running' ? 'bg-[#EFF6FF]/50' : 'hover:bg-[#F8FAFC]'}`}
                 >
                   {columns.map((col, index) => (
                     <td key={index} className="px-6 py-3 text-[#0F172A] align-middle">

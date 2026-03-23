@@ -22,6 +22,7 @@ export default function CampaignListPage() {
   const [stopModalOpen, setStopModalOpen] = useState(false);
   
   const [activeCampaign, setActiveCampaign] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // Filter campaigns
   const filteredCampaigns = campaigns.filter(c => {
@@ -29,6 +30,20 @@ export default function CampaignListPage() {
     if (activeFilter === 'Active') return c.status === 'Active' || c.status === 'Running';
     return c.status === activeFilter;
   });
+
+  const handleBulkDelete = () => {
+    setCampaigns(campaigns.filter(c => !selectedIds.includes(c.id)));
+    toast.success(`${selectedIds.length} campaigns deleted.`);
+    setSelectedIds([]);
+  };
+
+  const handleBulkToggle = (newStatus) => {
+    setCampaigns(campaigns.map(c => 
+      selectedIds.includes(c.id) ? { ...c, status: newStatus } : c
+    ));
+    toast.success(`${selectedIds.length} campaigns set to ${newStatus.toLowerCase()}.`);
+    setSelectedIds([]);
+  };
 
   // Actions
   const handleCreate = () => navigate('/campaigns/create');
@@ -89,7 +104,7 @@ export default function CampaignListPage() {
     const newCampaign = {
       ...campaign,
       id: `cmp_${Date.now()}`,
-      name: `Copy of ${campaign.name}`,
+      name: `${campaign.name} (Copy)`,
       status: 'Inactive',
       processed: 0,
       lastRun: 'Never',
@@ -108,7 +123,7 @@ export default function CampaignListPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto flex flex-col h-full fade-in pb-24">
+    <div className="p-8 max-w-7xl mx-auto flex flex-col h-full fade-in pb-24 relative">
       <PageHeader 
         title="Campaigns" 
         action={
@@ -124,6 +139,39 @@ export default function CampaignListPage() {
         activeFilter={activeFilter} 
         onFilterChange={setActiveFilter} 
       />
+
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#0F172A] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 z-[100] animate-in slide-in-from-bottom-4">
+          <span className="text-sm font-bold border-r border-slate-700 pr-6">{selectedIds.length} selected</span>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => handleBulkToggle('Active')}
+              className="px-3 py-1.5 hover:bg-slate-800 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4 text-green-400 rotate-45" /> Activate
+            </button>
+            <button 
+              onClick={() => handleBulkToggle('Inactive')}
+              className="px-3 py-1.5 hover:bg-slate-800 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4 text-orange-400" /> Deactivate
+            </button>
+            <button 
+              onClick={handleBulkDelete}
+              className="px-3 py-1.5 hover:bg-red-900/40 text-red-400 hover:text-red-300 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4 rotate-45" /> Delete
+            </button>
+          </div>
+          <button 
+            onClick={() => setSelectedIds([])}
+            className="ml-4 text-xs text-slate-400 hover:text-white transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       {campaigns.length === 0 ? (
         <div className="flex-1 flex items-center justify-center bg-white rounded-xl border border-[#E2E8F0]">
@@ -144,6 +192,8 @@ export default function CampaignListPage() {
           onStop={openStopConfirm}
           onDuplicate={handleDuplicate}
           onToggleStatus={handleToggleStatus}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
         />
       )}
 

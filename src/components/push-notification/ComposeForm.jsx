@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { PUSH_HISTORY } from '../../constants/mockData';
 import { useAppContext } from '../../context/AppContext';
 import { Send, Clock, Info, Search, ChevronRight } from 'lucide-react';
@@ -14,6 +14,7 @@ const CAMPAIGNS = ['Gold Member Win-Back', 'Points Expiry Push', 'VIP Churn Prev
 export default function ComposeForm({ data, onUpdate }) {
   const { pushTemplates, campaigns } = useAppContext();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   const handleTemplateSelect = (e) => {
     const tpl = pushTemplates.find(t => t.id === e.target.value);
@@ -55,6 +56,31 @@ export default function ComposeForm({ data, onUpdate }) {
   return (
     <div className="space-y-8 w-full max-w-2xl fade-in">
       
+      {data.campaign && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex flex-col sm:flex-row gap-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-full blur-3xl opacity-50 -mr-10 -mt-10 pointer-events-none"></div>
+          <div className="flex-1 relative z-10">
+             <h3 className="text-md font-semibold text-amber-900 mb-1 flex items-center gap-2">
+                <span className="text-lg">💡</span> Best send time for this segment
+             </h3>
+             <div className="text-sm text-amber-800 font-medium mb-4">{getSegmentForCampaign(data.campaign)}</div>
+             <p className="text-sm text-amber-900 mb-1">Peak open rate: <strong>Tuesday 08:30–09:30</strong></p>
+             <div className="flex items-center gap-4 text-xs text-amber-700">
+                <span>CTR at peak: <strong className="text-amber-900">34.2%</strong></span>
+                <span>vs off-peak: 12.1%</span>
+             </div>
+          </div>
+          <div className="flex items-center relative z-10 shrink-0">
+             <Button 
+               className="bg-amber-600 hover:bg-amber-700 text-white font-semibold shadow-sm text-sm"
+               onClick={() => onUpdate({ ...data, scheduleType: 'later', scheduleDate: 'Tuesday 08:30' })}
+             >
+               Use recommended time
+             </Button>
+          </div>
+        </div>
+      )}
+
       {/* Target */}
       <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
         <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">1. Target Audience</h3>
@@ -265,24 +291,55 @@ export default function ComposeForm({ data, onUpdate }) {
                 <th className="px-6 py-3 font-medium">Campaign</th>
                 <th className="px-6 py-3 font-medium text-right">Sent</th>
                 <th className="px-6 py-3 font-medium text-right">Delivered</th>
-                <th className="px-6 py-3 font-medium text-right">Failed</th>
                 <th className="px-6 py-3 font-medium text-right">Open Rate</th>
+                <th className="px-6 py-3 font-medium text-right">CVR</th>
+                <th className="px-6 py-3 font-medium text-right">Revenue</th>
                 <th className="px-6 py-3 font-medium">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E2E8F0]">
               {PUSH_HISTORY.map((row) => (
-                <tr key={row.id} className="hover:bg-[#F8FAFC] transition-colors group cursor-pointer group">
-                  <td className="px-6 py-4 font-medium text-[#0F172A] flex items-center gap-2">
-                    {row.campaign}
-                    <ChevronRight className="w-4 h-4 text-transparent group-hover:text-blue-500 transition-colors" />
-                  </td>
-                  <td className="px-6 py-4 text-right text-[#475569]">{row.sent.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-right text-[#10B981] font-medium">{row.delivered.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-right text-[#EF4444] font-medium">{row.failed}</td>
-                  <td className="px-6 py-4 text-right font-medium text-[#0F172A]">{row.openRate}</td>
-                  <td className="px-6 py-4 text-[#64748B] text-xs">{row.sentAt}</td>
-                </tr>
+                <Fragment key={row.id}>
+                  <tr 
+                    className="hover:bg-[#F8FAFC] transition-colors group cursor-pointer"
+                    onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}
+                  >
+                    <td className="px-6 py-4 font-medium text-[#0F172A] flex items-center gap-2">
+                      {row.campaign}
+                      <ChevronRight className={`w-4 h-4 text-transparent group-hover:text-blue-500 transition-transform ${expandedRow === row.id ? 'rotate-90 text-blue-500' : ''}`} />
+                    </td>
+                    <td className="px-6 py-4 text-right text-[#475569]">{row.sent.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-right text-[#10B981] font-medium">{row.delivered.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-right font-medium text-[#0F172A]">{row.openRate}</td>
+                    <td className="px-6 py-4 text-right font-medium text-[#0F172A]">8.4%</td>
+                    <td className="px-6 py-4 text-right font-medium text-[#0F172A]">฿89,200</td>
+                    <td className="px-6 py-4 text-[#64748B] text-xs">{row.sentAt}</td>
+                  </tr>
+                  {expandedRow === row.id && (
+                    <tr className="bg-slate-50 border-b border-[#E2E8F0]">
+                       <td colSpan="7" className="px-6 py-6">
+                          <div className="flex flex-col">
+                             <h4 className="text-sm font-semibold text-[#0F172A] mb-4">Hourly Open Rate Distribution</h4>
+                             <div className="h-24 flex items-end gap-1 overflow-x-auto w-full group">
+                               {Array.from({ length: 24 }).map((_, i) => {
+                                 const isPeak = i === 8;
+                                 const height = isPeak ? 100 : Math.random() * 40 + 10;
+                                 return (
+                                   <div key={i} className="flex-1 flex flex-col items-center justify-end gap-1 group/bar min-w-[20px]">
+                                     <div 
+                                       className={`w-full rounded-t-sm transition-all ${isPeak ? 'bg-amber-400 group-hover:bg-amber-500 shadow-[0_0_10px_rgba(251,191,36,0.5)]' : 'bg-blue-200 hover:bg-blue-300'}`}
+                                       style={{ height: `${height}%` }}
+                                     ></div>
+                                     <div className={`text-[9px] ${isPeak ? 'font-bold text-amber-700' : 'text-[#94A3B8]'}`}>{i}h</div>
+                                   </div>
+                                 );
+                               })}
+                             </div>
+                          </div>
+                       </td>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Save, Plus, ArrowLeft } from 'lucide-react';
+import { Save, Plus, ArrowLeft, ArrowUpRight, TrendingDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import PageHeader from '../components/layout/PageHeader';
@@ -9,6 +10,7 @@ import PhoneMockup from '../components/dynamic-content/PhoneMockup';
 import Button from '../components/ui/Button';
 
 export default function DynamicContentPage() {
+  const navigate = useNavigate();
   const [view, setView] = useState('list'); // 'list' | 'edit'
 
   const [activeTab, setActiveTab] = useState('Popup Preview'); // 'Popup Preview' | 'Banner Preview'
@@ -107,7 +109,7 @@ export default function DynamicContentPage() {
         {/* Right Preview Panel (55%) */}
         <div className="lg:w-[55%] flex flex-col">
           {/* Tab bar */}
-          <div className="flex border-b border-[#E2E8F0] mb-8 gap-6">
+          <div className="flex border-b border-[#E2E8F0] mb-6 gap-6">
             {['Popup Preview', 'Banner Preview'].map(tab => (
               <button
                 key={tab}
@@ -123,8 +125,44 @@ export default function DynamicContentPage() {
             ))}
           </div>
           
-          <div className="flex-1 bg-[#F8FAFC] rounded-2xl flex items-center justify-center p-8 overflow-y-auto border border-[#E2E8F0]">
+          <div className="bg-[#F8FAFC] rounded-2xl flex items-center justify-center p-8 overflow-y-auto border border-[#E2E8F0] mb-6 shadow-inner">
             <PhoneMockup content={content} previewMode={activeTab.split(' ')[0].toLowerCase()} />
+          </div>
+
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 mt-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+            <h3 className="text-md font-semibold text-[#0F172A] mb-4 border-b border-[#E2E8F0] pb-2">Performance Focus</h3>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-sm font-medium text-[#64748B]">Impressions:</span>
+              <span className="text-sm font-bold text-[#0F172A]">48,200</span>
+            </div>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-sm font-medium text-[#64748B]">Clicks:</span>
+              <span className="text-sm font-bold text-[#0F172A]">5,462</span>
+            </div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-[#64748B]">CTR:</span>
+              <span className="text-sm font-bold text-red-600 flex items-center">11.2% <TrendingDown className="w-3 h-3 mx-1" /> from 24.1%</span>
+            </div>
+            
+            <div className="bg-red-50 text-red-800 text-sm p-3 rounded-lg border border-red-100 mb-4">
+              <div className="font-bold flex items-center gap-1.5 mb-1 text-red-700">🔴 Fatigue detected</div>
+              CTR dropped 53% over 22 days
+            </div>
+
+            <div className="mb-5 text-sm">
+              <span className="text-[#64748B] block mb-1">Campaigns using this content: 1</span>
+              <span className="font-medium text-[#0F172A]">Gold Member Win-Back — March</span>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Button variant="outline" className="text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100 justify-center w-full" onClick={() => navigate('/analytics')}>
+                View in Analytics <ArrowUpRight className="w-4 h-4 ml-1.5" />
+              </Button>
+              <Button variant="secondary" className="justify-center w-full text-[#0F172A]">
+                Create Replacement Content
+              </Button>
+            </div>
           </div>
         </div>
       </div>

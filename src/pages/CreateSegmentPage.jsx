@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Save, AlertCircle, Wand2, History, Clock } from 'lucide-react';
+import { Save, AlertCircle, Wand2, History, Clock, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 import PageHeader from '../components/layout/PageHeader';
@@ -249,6 +249,46 @@ export default function CreateSegmentPage() {
           />
         </div>
       </div>
+
+      {id && (
+        <div className="mt-12 bg-white border border-[#E2E8F0] rounded-xl shadow-sm overflow-hidden mb-12">
+          <div className="flex space-x-1 border-b border-[#E2E8F0] px-6 pt-4 bg-[#F8FAFC]">
+            <button className="py-2 px-4 text-sm font-medium border-b-2 border-transparent text-[#64748B] hover:text-[#0F172A]">Rules</button>
+            <button className="py-2 px-4 text-sm font-medium border-b-2 border-transparent text-[#64748B] hover:text-[#0F172A]">Members</button>
+            <button className="py-2 px-4 text-sm font-medium border-b-2 border-transparent text-[#64748B] hover:text-[#0F172A]">Records</button>
+            <button className="py-2 px-4 text-sm font-medium border-b-2 border-[#2563EB] text-[#2563EB]">Performance</button>
+          </div>
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-semibold text-[#0F172A]">Performance Summary for this Segment</h3>
+              <button onClick={() => navigate('/insights')} className="text-sm font-medium text-[#2563EB] hover:underline flex items-center gap-1">View full insights <ArrowRight className="w-4 h-4" /></button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="col-span-2 bg-[#F8FAFC] p-4 rounded-lg border border-[#E2E8F0]">
+                <h4 className="text-sm font-semibold text-[#0F172A] mb-3">Recent Campaigns</h4>
+                <div className="space-y-2 text-sm">
+                   <div className="flex justify-between bg-white p-3 rounded shadow-sm border border-[#E2E8F0]"><span className="font-medium text-[#0F172A]">Gold Win-Back</span><span className="text-[#10B981] font-semibold">CTR: 20.0%</span></div>
+                   <div className="flex justify-between bg-white p-3 rounded shadow-sm border border-[#E2E8F0]"><span className="font-medium text-[#0F172A]">Points Expiry</span><span className="text-[#0F172A] font-semibold">CTR: 12.4%</span></div>
+                   <div className="flex justify-between bg-white p-3 rounded shadow-sm border border-[#E2E8F0]"><span className="font-medium text-[#0F172A]">Dormant Reactivation</span><span className="text-red-500 font-semibold">CTR: 6.2%</span></div>
+                </div>
+              </div>
+              <div className="col-span-1 bg-[#F8FAFC] p-4 rounded-lg border border-[#E2E8F0]">
+                <h4 className="text-sm font-semibold text-[#0F172A] mb-3">Content Affinity</h4>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <div className="text-xs text-green-700 font-bold mb-1 uppercase">Best Performing</div>
+                    <div className="bg-white p-3 rounded shadow-sm border border-green-200 text-[#0F172A] font-medium">Win-Back Banner <br/><span className="text-green-600">(28.4%)</span></div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-red-700 font-bold mb-1 uppercase">Worst Performing</div>
+                    <div className="bg-white p-3 rounded shadow-sm border border-red-200 text-[#0F172A] font-medium">Dormant Banner <br/><span className="text-red-500">(6.2%)</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Modal
         isOpen={templateModalOpen}

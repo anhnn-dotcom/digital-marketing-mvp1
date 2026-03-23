@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Megaphone, Calendar, TrendingUp, AlertTriangle, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Megaphone, Calendar, TrendingUp, AlertTriangle, CheckCircle, ArrowRight, ShieldCheck, Zap, FlaskConical } from 'lucide-react';
 import PageHeader from '../components/layout/PageHeader';
 import ProgressBar from '../components/ui/ProgressBar';
 import Badge from '../components/ui/Badge';
@@ -87,6 +87,39 @@ export default function OverviewDashboardPage() {
             <Link to="/campaigns" className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 mt-6">
               View all campaigns <ArrowRight className="w-4 h-4" />
             </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Optimization Alerts Card */}
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 relative">
+              <h3 className="text-md font-semibold text-[#0F172A] mb-2 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-amber-500" /> Optimization
+              </h3>
+              <div className="text-sm text-[#0F172A] font-medium mb-1">8 suggestions pending</div>
+              <ul className="text-xs text-[#64748B] space-y-1 mb-3">
+                <li>🔴 2 high impact</li>
+                <li>🟡 4 medium · 🟢 2 low</li>
+                <li className="text-green-700 font-semibold pt-1">Estimated lift: ฿284K</li>
+              </ul>
+              <Link to="/optimize" className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                View Suggestions <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            {/* A/B Tests Running Card */}
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6 relative">
+              <h3 className="text-md font-semibold text-[#0F172A] mb-2 flex items-center gap-2">
+                <FlaskConical className="w-5 h-5 text-purple-600" /> A/B Tests
+              </h3>
+              <div className="text-sm text-[#0F172A] font-medium mb-1">3 tests running</div>
+              <ul className="text-xs text-[#64748B] space-y-1 mb-3">
+                <li>1 test ready to deploy (94% sig.)</li>
+                <li className="text-purple-700 font-medium">→ Gold Win-Back Push: B leading</li>
+              </ul>
+              <Link to="/optimize#ab-tests" className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 mt-5">
+                View Tests <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
           </div>
 
           {/* Upcoming Schedules */}
