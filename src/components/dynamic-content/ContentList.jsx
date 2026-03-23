@@ -6,7 +6,7 @@ import SearchBar from '../ui/SearchBar';
 import Badge from '../ui/Badge';
 import ActionsMenu from '../ui/ActionsMenu';
 
-export default function ContentList({ onCreateContent }) {
+export default function ContentList({ onCreateContent, onEditContent }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -87,7 +87,7 @@ export default function ContentList({ onCreateContent }) {
             </thead>
             <tbody className="divide-y divide-[#E2E8F0]">
               {filteredContents.map((item) => (
-                <tr key={item.id} className="hover:bg-[#F8FAFC] transition-colors group cursor-pointer" onClick={() => onCreateContent()}>
+                <tr key={item.id} className="hover:bg-[#F8FAFC] transition-colors group cursor-pointer" onClick={() => onEditContent ? onEditContent(item) : onCreateContent()}>
                   <td className="px-6 py-4">
                     <div className={`w-12 h-8 rounded flex items-center justify-center ${item.type === 'Banner' ? 'bg-gradient-to-r from-blue-400 to-blue-600' : 'bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg w-10 h-10'}`}>
                       <ImageIcon className="w-4 h-4 text-white opacity-80" />
@@ -107,7 +107,7 @@ export default function ContentList({ onCreateContent }) {
                     <ActionsMenu 
                       options={[
                         { label: 'Preview', onClick: () => {} },
-                        { label: 'Edit', onClick: () => onCreateContent() },
+                        { label: 'Edit', onClick: () => onEditContent ? onEditContent(item) : onCreateContent() },
                         { label: 'Duplicate', onClick: () => {} },
                         { label: 'Link to Campaign', onClick: () => {} },
                         { type: 'divider' },

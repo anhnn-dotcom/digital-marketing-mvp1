@@ -26,6 +26,7 @@ export default function RuleDrawerForm({ isOpen, onClose, initialData, onSave, m
     staleness: 30,
     placements: ['Home Screen', 'After Login'],
     maxItems: 3,
+    layoutType: 'grid',
     priority: maxPriority,
     status: 'Active'
   });
@@ -37,7 +38,9 @@ export default function RuleDrawerForm({ isOpen, onClose, initialData, onSave, m
        setFormData({
          ...initialData,
          type: initialData.products.length > 0 ? 'Specific products' : 'Based on viewed products',
-         placements: initialData.placements || ['Home Screen']
+         placements: initialData.placements || ['Home Screen'],
+         maxItems: initialData.layout?.maxItems || initialData.maxItems || 3,
+         layoutType: initialData.layout?.type || 'grid'
        });
     } else {
        setFormData({
@@ -50,6 +53,7 @@ export default function RuleDrawerForm({ isOpen, onClose, initialData, onSave, m
          staleness: 30,
          placements: ['Home Screen', 'After Login'],
          maxItems: 3,
+         layoutType: 'grid',
          priority: maxPriority,
          status: 'Active'
        });
@@ -60,7 +64,8 @@ export default function RuleDrawerForm({ isOpen, onClose, initialData, onSave, m
     e.preventDefault();
     onSave({
       ...formData,
-      products: formData.type === 'Specific products' ? formData.products : []
+      products: formData.type === 'Specific products' ? formData.products : [],
+      layout: { maxItems: formData.maxItems, type: formData.layoutType }
     });
   };
 
@@ -295,7 +300,19 @@ export default function RuleDrawerForm({ isOpen, onClose, initialData, onSave, m
               </div>
             </div>
 
-            <div className="space-y-2 pt-2">
+            <div className="space-y-3 pt-2 border-t border-gray-200 mt-4">
+              <label className="text-sm font-medium text-[#0F172A]">Component Layout Style</label>
+              <div className="grid grid-cols-3 gap-2">
+                {['grid', 'carousel', 'banner'].map(lt => (
+                  <label key={lt} className={`border rounded-lg p-3 text-center cursor-pointer transition-colors ${formData.layoutType === lt ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 hover:bg-gray-50 text-gray-600'}`}>
+                    <input type="radio" className="sr-only" checked={formData.layoutType === lt} onChange={() => handleUpdate('layoutType', lt)} />
+                    <span className="text-xs font-semibold uppercase">{lt}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-4 border-t border-gray-200 mt-4">
               <Input 
                 type="number"
                 label="Global Priority"

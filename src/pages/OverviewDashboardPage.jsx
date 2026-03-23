@@ -1,13 +1,31 @@
 import { Link } from 'react-router-dom';
-import { Megaphone, Calendar, TrendingUp, AlertTriangle, CheckCircle, ArrowRight } from 'lucide-react';
+import { Megaphone, Calendar, TrendingUp, AlertTriangle, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 import PageHeader from '../components/layout/PageHeader';
 import ProgressBar from '../components/ui/ProgressBar';
 import Badge from '../components/ui/Badge';
+import { useState, useEffect } from 'react';
+import { getGreeting } from '../lib/edgeConfig';
 
 export default function OverviewDashboardPage() {
+  const [greeting, setGreeting] = useState('');
+
+  useEffect(() => {
+    async function loadGreeting() {
+      const data = await getGreeting();
+      if (data) setGreeting(data);
+    }
+    loadGreeting();
+  }, []);
+
   return (
     <div className="p-8 max-w-[1200px] mx-auto h-full flex flex-col fade-in space-y-8">
-      <PageHeader title="Welcome, Marketing Team" />
+      <div className="flex justify-between items-center">
+        <PageHeader title={greeting || "Welcome, Marketing Team"} />
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full border border-green-200 text-xs font-semibold">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          Edge Config Connected
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         

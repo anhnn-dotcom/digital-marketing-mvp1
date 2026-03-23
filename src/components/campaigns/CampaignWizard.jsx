@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
 import { ChevronRight, ChevronLeft, Save, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -19,6 +20,8 @@ const STEPS = [
 ];
 
 export default function CampaignWizard() {
+  const { id } = useParams();
+  const { campaigns } = useAppContext();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState({
@@ -42,6 +45,32 @@ export default function CampaignWizard() {
     loyaltyAction: 'Award Points'
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (id) {
+      const camp = campaigns.find(c => c.id === id);
+      if (camp) {
+        setData(prev => ({
+          ...prev,
+          code: camp.id || 'CAM-011',
+          name: camp.name || '',
+          campaignType: camp.type || 'DM Delivery',
+          segment: camp.segmentId || camp.targetDetails?.segmentId || '',
+          dataOrder: camp.targetDetails?.order || 'Oldest first',
+          limitType: camp.targetDetails?.limit === 'All matching members' || camp.targetDetails?.limit === 'All matching' ? 'all' : 'fixed',
+          limitValue: '',
+          type: camp.scheduleDetails?.multipleTimes === 'OFF' && !camp.scheduleDetails?.repeat ? 'one-time' : 'recurring',
+          repeat: camp.scheduleDetails?.repeat ? camp.scheduleDetails.repeat.split(' ')[1] === 'day' ? 'Day' : camp.scheduleDetails.repeat.split(' ')[1] === 'days' ? 'Day' : 'Week' : 'Day',
+          repeatInterval: camp.scheduleDetails?.repeat ? camp.scheduleDetails.repeat.split(' ')[2] === 'days' ? camp.scheduleDetails.repeat.split(' ')[1] : '1' : '1',
+          date: camp.scheduleDetails?.start ? new Date(camp.scheduleDetails.start).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          time: camp.scheduleDetails?.time || '09:00',
+          runTimes: camp.scheduleDetails?.runsAt || [],
+          channels: camp.delivery || [],
+          loyaltyAction: camp.actionDetails?.action || 'Award Points'
+        }));
+      }
+    }
+  }, [id, campaigns]);
 
   const validateStep = () => {
     const newErrors = {};

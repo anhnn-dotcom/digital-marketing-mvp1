@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Save, AlertCircle, Wand2, History, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -10,9 +10,12 @@ import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Toggle from '../components/ui/Toggle';
 import Modal from '../components/ui/Modal';
+import { useAppContext } from '../context/AppContext';
 
 export default function CreateSegmentPage() {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const { segments, updateSegment, addSegment } = useAppContext();
   const [name, setName] = useState('');
   const [autoSync, setAutoSync] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -32,6 +35,22 @@ export default function CreateSegmentPage() {
   ]);
   const [globalLogic, setGlobalLogic] = useState('AND');
 
+  useEffect(() => {
+    if (id) {
+      const existing = segments.find(s => s.id === id);
+      if (existing) {
+        setName(existing.name || '');
+        setAutoSync(existing.autoSync || false);
+        setGroups(existing.groups || [
+          { id: 'group_1', dataset: 'Customer Profile', conditions: [{ id: 'cond_1', field: '', operator: '', value: '' }] }
+        ]);
+        setGlobalLogic(existing.globalLogic || 'AND');
+        setMemberCount(existing.memberCount || 0);
+        setSyncTime(existing.lastSync || 'Mar 23, 2026 14:30');
+      }
+    }
+  }, [id, segments]);
+
   const handleRunPreview = () => {
     setIsCalculating(true);
     setTimeout(() => {
@@ -47,7 +66,29 @@ export default function CreateSegmentPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    toast.success('Segment saved successfully!');
+
+    const payload = {
+      name,
+      autoSync,
+      globalLogic,
+      groups,
+      memberCount: isCalculating ? 0 : memberCount, 
+      lastSync: isCalculating ? 'Just now' : syncTime,
+      datasets: [...new Set(groups.map(g => g.dataset))],
+      conditions: groups.reduce((acc, g) => acc + g.conditions.length, 0),
+      status: 'active',
+      updated: 'Just now'
+    };
+
+    if (id) {
+      updateSegment(id, payload);
+      toast.success('Segment updated successfully!');
+    } else {
+      payload.id = `seg_${Date.now()}`;
+      addSegment(payload);
+      toast.success('Segment created successfully!');
+    }
+    
     navigate('/segments');
   };
 
@@ -118,8 +159,8 @@ export default function CreateSegmentPage() {
   return (
     <div className="p-8 max-w-[1400px] mx-auto h-full fade-in pb-32">
       <PageHeader 
-        title="Create Segment" 
-        breadcrumbs={['Segments', 'Create New']}
+        title={id ? 'Edit Segment' : 'Create Segment'}
+        breadcrumbs={['Segments', id ? 'Edit' : 'Create New']}
         action={
           <div className="flex items-center gap-3">
             <Button variant="secondary" onClick={() => setTemplateModalOpen(true)}>

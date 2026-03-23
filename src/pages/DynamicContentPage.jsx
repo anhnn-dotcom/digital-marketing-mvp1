@@ -20,10 +20,27 @@ export default function DynamicContentPage() {
     category: 'Promotional',
     imageUrl: '',
     ratio: '16:9',
+    headlineText: '',
+    bodyCopy: '',
+    ctaText: 'Claim Now',
     actionType: 'Direct to Service Screen',
     actionValue: 'scanQRCode',
     variations: []
   });
+
+  const handleEditContent = (existingContent) => {
+    setContent({
+      ...existingContent,
+      imageUrl: existingContent.imageUrl || existingContent.payload?.visualUrl || '',
+      headlineText: existingContent.headlineText || existingContent.payload?.headlineText || '',
+      bodyCopy: existingContent.bodyCopy || existingContent.payload?.bodyCopy || '',
+      ctaText: existingContent.ctaText || existingContent.payload?.ctaText || 'Claim Now',
+      actionType: 'Direct to Service Screen',
+      actionValue: 'scanQRCode',
+      variations: existingContent.variations || []
+    });
+    setView('edit');
+  };
 
   const handleUpdate = (field, value) => {
     setContent(prev => ({
@@ -49,7 +66,7 @@ export default function DynamicContentPage() {
             </Button>
           }
         />
-        <ContentList onCreateContent={() => setView('edit')} />
+        <ContentList onCreateContent={() => setView('edit')} onEditContent={handleEditContent} />
       </div>
     );
   }

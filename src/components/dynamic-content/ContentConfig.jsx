@@ -164,6 +164,32 @@ export default function ContentConfig({ content, onUpdate }) {
         </div>
       </section>
 
+      {/* SECTION 2.5: Text Payload */}
+      <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
+        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">Text Payload</h3>
+        <Input 
+          label="Headline Text"
+          value={content.headlineText || ''}
+          onChange={(e) => onUpdate('headlineText', e.target.value)}
+          placeholder="e.g. Special Flash Deal!"
+        />
+        <div className="flex flex-col gap-1.5 w-full">
+          <label className="text-sm font-medium text-[#0F172A]">Body Copy</label>
+          <textarea 
+            className="w-full h-24 p-3 rounded-lg border border-[#E2E8F0] focus:ring-2 focus:ring-[#2563EB] focus:border-[#2563EB] text-[#0F172A] text-sm resize-none outline-none"
+            value={content.bodyCopy || ''}
+            onChange={(e) => onUpdate('bodyCopy', e.target.value)}
+            placeholder="e.g. Get 50% discount on your next transaction."
+          />
+        </div>
+        <Input 
+          label="CTA Button Text"
+          value={content.ctaText || ''}
+          onChange={(e) => onUpdate('ctaText', e.target.value)}
+          placeholder="e.g. Claim Now"
+        />
+      </section>
+
       {/* SECTION 3: Action Config */}
       <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
         <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">Action Config</h3>

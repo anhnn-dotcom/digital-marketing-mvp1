@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PUSH_HISTORY } from '../../constants/mockData';
+import { useAppContext } from '../../context/AppContext';
 import { Send, Clock, Info, Search, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -11,7 +12,22 @@ import Button from '../ui/Button';
 const CAMPAIGNS = ['Gold Member Win-Back', 'Points Expiry Push', 'VIP Churn Prevention', 'KYC Completion Push'];
 
 export default function ComposeForm({ data, onUpdate }) {
+  const { pushTemplates, campaigns } = useAppContext();
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleTemplateSelect = (e) => {
+    const tpl = pushTemplates.find(t => t.id === e.target.value);
+    if(tpl) {
+      onUpdate({
+        ...data,
+        campaign: tpl.campaign,
+        title: tpl.title,
+        body: tpl.body,
+        actionType: 'Deep link',
+        actionValue: tpl.trigger
+      });
+    }
+  };
 
   const handleSend = () => {
     if (!data.title || !data.body || !data.campaign) {
@@ -43,6 +59,12 @@ export default function ComposeForm({ data, onUpdate }) {
       <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
         <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">1. Target Audience</h3>
         
+        <Select 
+          label="Load from Template (Optional)"
+          options={['', ...pushTemplates.map(t => ({ value: t.id, label: t.campaign + ' - ' + t.title }))]}
+          onChange={handleTemplateSelect}
+        />
+
         <Select 
           label="Campaign*"
           options={['', ...CAMPAIGNS]}
