@@ -17,7 +17,7 @@ export default function SegmentListPage() {
   const { segments, updateSegment, deleteSegment, addSegment, campaigns } = useAppContext();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [segmentToDelete, setSegmentToDelete] = useState(null);
-  
+
   const [campaignsDrawerOpen, setCampaignsDrawerOpen] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(null);
 
@@ -68,13 +68,13 @@ export default function SegmentListPage() {
     setSelectedSegment(segment);
     setCampaignsDrawerOpen(true);
   };
-  
+
   const relatedCampaigns = selectedSegment ? campaigns.filter(c => c.segment?.includes(selectedSegment.name) || selectedSegment.name?.includes(c.segment)) : [];
 
   return (
     <div className="p-8 max-w-[1400px] mx-auto flex flex-col h-full fade-in pb-24">
-      <PageHeader 
-        title="Segments" 
+      <PageHeader
+        title="Segments"
         action={
           <Button onClick={handleCreate}>
             <Plus className="w-4 h-4 mr-2" />
@@ -82,45 +82,45 @@ export default function SegmentListPage() {
           </Button>
         }
       />
-      
+
       {/* Summary Bar */}
-      <div className="flex flex-wrap items-center gap-4 mb-8 bg-white border border-[#E2E8F0] p-4 rounded-xl shadow-sm hide-scrollbar overflow-x-auto">
-        <div className="flex items-center gap-3 pr-6 border-r border-[#E2E8F0] min-w-max">
-          <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+      <div className="flex items-center gap-4 mb-8 bg-white border border-[#E2E8F0] p-10 rounded-xl shadow-sm overflow-x-auto hide-scrollbar">
+        <div className="flex items-center gap-3 pr-6 border-r border-[#E2E8F0] flex-shrink-0">
+          <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0">
             <LayoutList className="w-5 h-5 text-slate-600" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Segments</p>
+          <div className="min-w-max">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">Total Segments</p>
             <p className="text-xl font-bold text-slate-900 leading-none mt-1">{totalSegments}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 px-2 pr-6 border-r border-[#E2E8F0] min-w-max">
-          <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center">
+        <div className="flex items-center gap-3 px-2 pr-6 border-r border-[#E2E8F0] flex-shrink-0">
+          <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center flex-shrink-0">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Active Models</p>
+          <div className="min-w-max">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">Active Models</p>
             <p className="text-xl font-bold text-slate-900 leading-none mt-1">{activeSegments}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 px-2 pr-6 border-r border-[#E2E8F0] min-w-max">
-          <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center">
+        <div className="flex items-center gap-3 px-2 pr-6 border-r border-[#E2E8F0] flex-shrink-0">
+          <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center flex-shrink-0">
             <Users className="w-5 h-5 text-indigo-600" />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Members Covered</p>
+          <div className="min-w-max">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">Members Covered</p>
             <p className="text-xl font-bold text-slate-900 leading-none mt-1">{new Intl.NumberFormat('en-US').format(totalMembers)}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 px-2 min-w-max">
-          <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+        <div className="flex items-center gap-3 px-2 flex-shrink-0">
+          <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
             <RefreshCw className={`w-5 h-5 text-blue-600 ${syncingSegments > 0 ? 'animate-spin spin-slow' : ''}`} />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Syncing Now</p>
+          <div className="min-w-max">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">Syncing Now</p>
             <p className="text-xl font-bold text-slate-900 leading-none mt-1">{syncingSegments}</p>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function SegmentListPage() {
 
       {segments.length === 0 ? (
         <div className="flex-1 flex items-center justify-center bg-white rounded-xl border border-[#E2E8F0]">
-          <EmptyState 
+          <EmptyState
             title="No segments found"
             description="Create your first audience segment to start targeting users in campaigns."
             actionLabel="Create Segment"
@@ -136,8 +136,8 @@ export default function SegmentListPage() {
           />
         </div>
       ) : (
-        <SegmentTable 
-          segments={segments} 
+        <SegmentTable
+          segments={segments}
           onView={(segment) => navigate(`/segments/edit/${segment.id}`)}
           onEdit={(segment) => navigate(`/segments/edit/${segment.id}`)}
           onDuplicate={handleDuplicate}
@@ -171,7 +171,7 @@ export default function SegmentListPage() {
       >
         <div className="p-6">
           <h3 className="text-lg font-bold text-[#0F172A] mb-4">{selectedSegment?.name}</h3>
-          
+
           {relatedCampaigns.length > 0 ? (
             <div className="space-y-4">
               {relatedCampaigns.map(camp => (

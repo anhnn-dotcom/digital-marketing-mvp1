@@ -1,197 +1,216 @@
-import { useState } from 'react';
-import Input from '../../ui/Input';
-import Select from '../../ui/Select';
-import Toggle from '../../ui/Toggle';
-import { X } from 'lucide-react';
+import { CheckCircle2, Bell, Smartphone, Zap, Star, AlertTriangle, CalendarDays } from 'lucide-react';
+import { SEGMENTS } from '../../../constants/mockData';
 
-export default function ScheduleStep({ data, onUpdate }) {
-  const [newRunTime, setNewRunTime] = useState('');
+const CHANNEL_META = {
+  push:   { label: 'Push Notification', icon: Bell,       color: 'text-blue-600',    bg: 'bg-blue-50'   },
+  banner: { label: 'Banner / Popup',    icon: Smartphone, color: 'text-indigo-600',  bg: 'bg-indigo-50' },
+  rec:    { label: 'Recommendation',    icon: Zap,        color: 'text-emerald-600', bg: 'bg-emerald-50'},
+  line:   { label: 'LINE OA',           icon: () => <span className="font-black text-green-600 text-sm">L</span>, color: 'text-green-600', bg: 'bg-green-50' },
+};
 
-  const toggleDay = (day) => {
-    const days = data.repeatDays || [];
-    onUpdate({ ...data, repeatDays: days.includes(day) ? days.filter(d => d !== day) : [...days, day] });
-  };
+function ReviewRow({ label, children }) {
+  return (
+    <div className="flex items-start gap-4 py-3 border-b border-[#F1F5F9] last:border-0">
+      <span className="text-sm text-[#64748B] w-36 shrink-0">{label}</span>
+      <div className="text-sm font-medium text-[#0F172A] flex-1">{children}</div>
+    </div>
+  );
+}
 
-  const addTime = () => {
-    if (newRunTime && !(data.runTimes || []).includes(newRunTime)) {
-      onUpdate({ ...data, runTimes: [...(data.runTimes || []), newRunTime].sort() });
-    }
-    setNewRunTime('');
-  };
+export default function ReviewLaunchStep({ data, onSaveDraft, onSchedule, onLaunch }) {
+  const ch = data.channels || {};
+  const enabledChannels = Object.entries(ch).filter(([, v]) => v?.enabled).map(([k]) => k);
+  const selectedSegments = (data.segmentIds || []).map(id => SEGMENTS.find(s => s.id === id)).filter(Boolean);
+  const totalReach = selectedSegments.reduce((sum, s) => sum + s.memberCount, 0);
 
-  const removeTime = (time) => {
-    onUpdate({ ...data, runTimes: (data.runTimes || []).filter(t => t !== time) });
-  };
+  // Overlap warning (simple: if 2+ segments)
+  const hasOverlap = selectedSegments.length >= 2;
 
-  const runTimes = data.runTimes?.length > 0 ? data.runTimes : [data.time || '09:00'];
-  const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  // Validation checks
+  const canLaunch = data.endDate && enabledChannels.length > 0 && selectedSegments.length > 0 && data.name?.trim();
+
+  const scheduleDesc = (() => {
+    const type = data.scheduleType || 'One-time';
+    const time = data.startTime || '09:00';
+    const start = data.startDate ? new Date(data.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+    const end = data.endDate ? new Date(data.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+    return `${type} · ${start} at ${time} → ${end}`;
+  })();
 
   return (
-    <div className="flex gap-8 fade-in text-left">
-      <div className="flex-1 space-y-6">
-        <div>
-          <h3 className="text-lg font-semibold text-[#0F172A] mb-1">Schedule & Retries</h3>
-          <p className="text-sm text-[#64748B] mb-6">When should this campaign be sent? You can send immediately or schedule for later.</p>
-        </div>
+    <div className="space-y-6 fade-in max-w-2xl text-left">
+      <div>
+        <h3 className="text-lg font-semibold text-[#0F172A] mb-1">Review & Launch</h3>
+        <p className="text-sm text-[#64748B] mb-6">Review your campaign configuration before going live.</p>
+      </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Input 
-            type="date" 
-            label="Start Date *"
-            min={new Date().toISOString().split('T')[0]}
-            value={data.date || ''}
-            onChange={(e) => onUpdate({ ...data, date: e.target.value })}
-          />
-          <Input 
-            type="time" 
-            label="Default Start Time *"
-            value={data.time || ''}
-            onChange={(e) => onUpdate({ ...data, time: e.target.value })}
-          />
-        </div>
-
-        <div className="space-y-4 pt-6 mt-6 border-t border-[#E2E8F0]">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-[#0F172A]">Repeat Campaign</span>
-            <Toggle checked={data.type === 'recurring'} onChange={(v) => onUpdate({ ...data, type: v ? 'recurring' : 'one-time' })} />
+      {/* Summary card */}
+      <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+          <h4 className="text-white font-bold text-base">{data.name || 'Untitled Campaign'}</h4>
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
+            <span className="text-blue-100 text-xs">{data.code}</span>
+            <span className="w-1 h-1 bg-blue-300 rounded-full" />
+            <span className="text-blue-100 text-xs">{data.campaignType}</span>
+            {data.category && <>
+              <span className="w-1 h-1 bg-blue-300 rounded-full" />
+              <span className="text-blue-100 text-xs">{data.category}</span>
+            </>}
           </div>
-
-          {data.type === 'recurring' && (
-            <div className="p-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl space-y-4 fade-in">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <Select 
-                    label="Frequency"
-                    options={['Minute', 'Hour', 'Day', 'Week', 'Month', 'Year']}
-                    value={data.repeat || 'Day'}
-                    onChange={(e) => onUpdate({ ...data, repeat: e.target.value })}
-                  />
-                </div>
-                <div className="flex-1">
-                  <Input 
-                    type="number" 
-                    label="Every"
-                    value={data.repeatInterval || '1'}
-                    onChange={(e) => onUpdate({ ...data, repeatInterval: e.target.value })}
-                    min="1"
-                  />
-                </div>
-              </div>
-
-              {data.repeat === 'Week' && (
-                <div>
-                  <label className="text-sm font-medium text-[#0F172A] block mb-2">On days</label>
-                  <div className="flex gap-2">
-                    {DAYS.map((d, i) => {
-                      const selected = (data.repeatDays || []).includes(i);
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => toggleDay(i)}
-                          className={`w-8 h-8 rounded-full text-xs font-semibold transition-all ${
-                            selected ? 'bg-[#2563EB] text-white' : 'bg-white border border-[#E2E8F0] text-[#64748B] hover:border-[#2563EB]'
-                          }`}
-                        >
-                          {d}
-                        </button>
-                      );
-                    })}
-                  </div>
+        </div>
+        <div className="p-5 divide-y divide-[#F1F5F9]">
+          <ReviewRow label="Description">{data.description || <span className="text-slate-400">No description</span>}</ReviewRow>
+          <ReviewRow label="Audience">
+            <div className="space-y-1">
+              {selectedSegments.length === 0
+                ? <span className="text-red-500">No segment selected</span>
+                : selectedSegments.map(s => (
+                    <div key={s.id} className="flex items-center gap-2">
+                      <span>{s.name}</span>
+                      <span className="text-slate-400 text-xs">({new Intl.NumberFormat('en-US').format(s.memberCount)} members)</span>
+                    </div>
+                  ))
+              }
+              {selectedSegments.length > 1 && (
+                <div className="text-xs text-slate-500 mt-1">
+                  Logic: <strong>{data.audienceLogic || 'Union'}</strong> · Est. total reach: <strong>{new Intl.NumberFormat('en-US').format(totalReach)}</strong>
                 </div>
               )}
-
-              {data.repeat === 'Month' && (
-                <div className="w-1/2">
-                  <Input 
-                    type="number" 
-                    label="On day of each month"
-                    value={data.repeatMonthDay || '1'}
-                    onChange={(e) => onUpdate({ ...data, repeatMonthDay: e.target.value })}
-                    min="1" max="31"
-                  />
+            </div>
+          </ReviewRow>
+          <ReviewRow label="Schedule">
+            <div className="flex items-center gap-2">
+              <CalendarDays className="w-4 h-4 text-slate-400" />
+              {scheduleDesc}
+            </div>
+          </ReviewRow>
+          <ReviewRow label="Freq. Cap">
+            {data.freqCapOverride ? `Custom: max ${data.freqCapMax || 3}/day` : 'Global default (2/day, 5/week)'}
+          </ReviewRow>
+          <ReviewRow label="Channels">
+            {enabledChannels.length === 0
+              ? <span className="text-red-500">No channels configured</span>
+              : (
+                <div className="flex flex-wrap gap-2">
+                  {enabledChannels.map(k => {
+                    const meta = CHANNEL_META[k];
+                    if (!meta) return null;
+                    const Icon = meta.icon;
+                    return (
+                      <span key={k} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${meta.bg} ${meta.color}`}>
+                        <Icon className="w-3 h-3" />
+                        {meta.label}
+                      </span>
+                    );
+                  })}
                 </div>
-              )}
-
-              <div className="w-1/2">
-                <Input 
-                  type="date" 
-                  label="End Date (Optional)"
-                  min={data.date || new Date().toISOString().split('T')[0]}
-                  value={data.endDate || ''}
-                  onChange={(e) => onUpdate({ ...data, endDate: e.target.value })}
-                />
-                <span className="text-xs text-[#64748B] block mt-1">Leave empty to run indefinitely</span>
+              )
+            }
+          </ReviewRow>
+          {data.tags?.length > 0 && (
+            <ReviewRow label="Tags">
+              <div className="flex flex-wrap gap-1.5">
+                {data.tags.map(t => (
+                  <span key={t} className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded">{t}</span>
+                ))}
               </div>
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-4 pt-6 mt-6 border-t border-[#E2E8F0]">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-sm font-medium text-[#0F172A] block">Multiple run times per day</span>
-              <span className="text-xs text-[#64748B]">Send multiple times on scheduled days</span>
-            </div>
-            <Toggle checked={data.useLocalTime} onChange={(v) => onUpdate({ ...data, useLocalTime: v })} />
-          </div>
-
-          {data.useLocalTime && (
-            <div className="flex flex-wrap gap-2 items-center min-h-[42px] p-2 border border-[#E2E8F0] rounded-lg bg-white fade-in">
-              {runTimes.map(t => (
-                <div key={t} className="flex items-center bg-[#F1F5F9] text-[#0F172A] text-sm font-medium px-2 py-1 rounded">
-                  {t}
-                  <button onClick={() => removeTime(t)} className="ml-1.5 text-[#94A3B8] hover:text-red-500">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
-              <div className="flex items-center ml-2">
-                <input 
-                  type="time" 
-                  value={newRunTime}
-                  onChange={(e) => setNewRunTime(e.target.value)}
-                  className="text-sm bg-transparent border-none outline-none focus:ring-0 w-[100px] text-[#0F172A]"
-                />
-                <button onClick={addTime} disabled={!newRunTime} className="text-sm font-medium text-[#2563EB] disabled:text-[#94A3B8] ml-2">
-                  + Add time
-                </button>
-              </div>
-            </div>
+            </ReviewRow>
           )}
         </div>
       </div>
 
-      <div className="w-[320px] shrink-0">
-        <div className="border border-[#E2E8F0] rounded-xl p-5 bg-[#F8FAFC] sticky top-0">
-          <h4 className="text-sm font-bold text-[#0F172A] mb-3 border-b border-[#E2E8F0] pb-2">Schedule Preview</h4>
-          <span className="text-xs font-semibold text-[#64748B] block mb-2 uppercase tracking-wider">Next 5 runs:</span>
-          <ul className="space-y-2 mb-4">
-            {/* Mocking the preview based on date and time selected */}
-            {[0, 1, 2, 3, 4].map(i => {
-              const d = new Date(data.date || new Date());
-              if (data.type === 'recurring' && data.repeat === 'Day') d.setDate(d.getDate() + (i * parseInt(data.repeatInterval || '1')));
-              const time = runTimes[i % runTimes.length];
-              return (
-                <li key={i} className="text-sm flex items-center text-[#0F172A]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB] mr-2" />
-                  {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}<span className="mx-1 text-[#94A3B8]">·</span>{time}
-                </li>
-              );
-            })}
-          </ul>
-          <div className="pt-3 border-t border-[#E2E8F0] text-sm text-[#0F172A] space-y-1">
-            <div className="flex justify-between">
-              <span className="text-[#64748B]">Estimated total:</span>
-              <span className="font-medium">{data.endDate ? '~15 runs' : 'Indefinite'}</span>
+      {/* Channel configs summary */}
+      {enabledChannels.length > 0 && (
+        <div className="space-y-3">
+          <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Channel Configuration</h4>
+          {ch.push?.enabled && (
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-blue-800"><Bell className="w-4 h-4" /> Push Notification</div>
+              <p className="text-xs text-blue-700"><strong>Title:</strong> {ch.push.title || '—'}</p>
+              <p className="text-xs text-blue-700 mt-1"><strong>Body:</strong> {ch.push.body || '—'}</p>
+              <p className="text-xs text-blue-600 mt-1">On tap: {ch.push.tapAction || 'Open Home'} · Fallback LINE: {ch.push.lineFallback ? 'Yes' : 'No'}</p>
             </div>
-            {data.endDate && (
-              <div className="flex justify-between">
-                <span className="text-[#64748B]">End date:</span>
-                <span className="font-medium">{new Date(data.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-              </div>
-            )}
-          </div>
+          )}
+          {ch.banner?.enabled && (
+            <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-indigo-800"><Smartphone className="w-4 h-4" /> {ch.banner.contentType || 'Banner'} / Popup</div>
+              <p className="text-xs text-indigo-700">Content selected: {ch.banner.contentId ? '✓ Picked from library' : <span className="text-amber-600">Not selected</span>}</p>
+              <p className="text-xs text-indigo-600 mt-1">Trigger: {ch.banner.displayTrigger || 'On app open'}</p>
+            </div>
+          )}
+          {ch.rec?.enabled && (
+            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-emerald-800"><Zap className="w-4 h-4" /> Product Recommendation</div>
+              <p className="text-xs text-emerald-700">Rule: {ch.rec.ruleId || '—'} · Max items: {ch.rec.maxItems || 3} · Placement: {ch.rec.placement || 'Home Screen'}</p>
+            </div>
+          )}
+          {ch.line?.enabled && (
+            <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-green-800"><span className="font-black">L</span> LINE OA</div>
+              <p className="text-xs text-green-700">Template: {ch.line.template || '—'} · Rich menu: {ch.line.richMenu ? 'Yes' : 'No'}</p>
+            </div>
+          )}
+          {data.loyaltyAction && data.campaignType === 'Loyalty Action' && (
+            <div className="bg-purple-50 border border-purple-100 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-purple-800"><Star className="w-4 h-4" /> {data.loyaltyAction}</div>
+              {data.loyaltyAction === 'Award Points' && <p className="text-xs text-purple-700">Points: {data.pointsAward || '—'} · Expiry: {data.pointsExpiry || 90}d · Reason: {data.pointsReason || '—'}</p>}
+              {data.loyaltyAction === 'Upgrade Tier' && <p className="text-xs text-purple-700">Target: {data.upgradeTier || 'Gold'} · Duration: {data.tierDuration === 'until' ? `Until ${data.tierUntilDate || '—'}` : 'Permanent'}</p>}
+              {data.loyaltyAction === 'Assign Voucher' && <p className="text-xs text-purple-700">Voucher: {data.voucherType || '—'} · Qty: {data.voucherQty || 1} · Expiry: {data.voucherExpiry || 30}d</p>}
+            </div>
+          )}
         </div>
+      )}
+
+      {/* Warnings */}
+      {!data.endDate && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+          <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
+          <p className="text-sm text-red-700"><strong>End Date is required</strong> — go back to Step 2 to set it before launching.</p>
+        </div>
+      )}
+      {hasOverlap && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+          <p className="text-sm text-amber-800">Audience overlap detected. Deduplication will be applied automatically — each member receives at most 1 message per send.</p>
+        </div>
+      )}
+      {selectedSegments.length > 0 && (
+        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-600">
+          <CheckCircle2 className="w-5 h-5 text-slate-400 shrink-0" />
+          Estimated frequency per member: <strong className="ml-1">{data.scheduleType === 'One-time' ? '1 message' : `~${data.freqCapOverride ? data.freqCapMax : 2}/day (capped)`}</strong>
+        </div>
+      )}
+
+      {/* Action buttons */}
+      <div className="flex items-center gap-3 pt-2 border-t border-[#E2E8F0]">
+        <button
+          onClick={onSaveDraft}
+          className="px-5 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+        >
+          Save as Draft
+        </button>
+        <button
+          onClick={onSchedule}
+          disabled={!canLaunch}
+          className="px-5 py-2.5 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Schedule
+        </button>
+        <button
+          onClick={onLaunch}
+          disabled={!canLaunch}
+          className="px-6 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          <CheckCircle2 className="w-4 h-4" /> Launch Now
+        </button>
+        {!canLaunch && (
+          <span className="text-xs text-red-500 ml-2">
+            {!data.name?.trim() ? 'Campaign name required · ' : ''}
+            {!data.endDate ? 'End date required · ' : ''}
+            {enabledChannels.length === 0 ? 'Select at least one channel · ' : ''}
+            {selectedSegments.length === 0 ? 'Select a segment' : ''}
+          </span>
+        )}
       </div>
     </div>
   );

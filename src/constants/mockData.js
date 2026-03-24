@@ -432,3 +432,279 @@ export const FREQUENCY_OVERRIDES = [
   { id: 'fo_2', segment: 'Lapsed Users', maxPerDay: 1, maxPerWeek: 3, cooldown: '72h', context: 'Sensitive — avoid push-away' },
   { id: 'fo_3', segment: 'Birthday Segment', maxPerDay: 5, maxPerWeek: 5, cooldown: '0h', context: 'Time-sensitive, burst OK on day' },
 ];
+
+// ═══════════════════════════════════════════════════════
+// PER-CAMPAIGN ANALYSIS DATA
+// Delivery Rate · Segment Engagement · Timing Analysis
+// ═══════════════════════════════════════════════════════
+
+const genHourly = (peakHour, peakOpen, peakClick) =>
+  Array.from({ length: 24 }, (_, h) => {
+    const dist = Math.abs(h - peakHour);
+    const factor = Math.max(0, 1 - dist * 0.13);
+    const noise = 0.85 + Math.random() * 0.3;
+    return {
+      hour: h,
+      openRate: parseFloat((peakOpen * factor * noise).toFixed(1)),
+      clickRate: parseFloat((peakClick * factor * noise).toFixed(1)),
+    };
+  });
+
+export const CAMPAIGN_ANALYSIS = {
+  'cmp_1': {
+    delivery: {
+      totalSent: 3847, delivered: 3765, failed: 61, pending: 21,
+      deliveryRate: 97.9,
+      channelBreakdown: [
+        { channel: 'Push Notification', sent: 2890, delivered: 2840, failed: 38, rate: 98.3 },
+        { channel: 'In-App Popup',      sent: 957,  delivered: 925,  failed: 23, rate: 96.7 },
+      ],
+      deviceBreakdown: [
+        { device: 'iOS',     sent: 2241, delivered: 2218, failed: 23, rate: 99.0 },
+        { device: 'Android', sent: 1606, delivered: 1547, failed: 38, rate: 96.3 },
+      ],
+      failureReasons: [
+        { reason: 'Device Offline',  count: 34, pct: 56 },
+        { reason: 'Invalid Token',   count: 18, pct: 30 },
+        { reason: 'User Opted Out',  count: 9,  pct: 14 },
+      ],
+    },
+    segmentEngagement: {
+      platformAvgCtr: 12.4, platformAvgCvr: 15.1,
+      groups: [
+        { label: 'iOS Users',      ctr: 24.1, cvr: 28.3, members: 2241, highlight: true  },
+        { label: 'Android Users',  ctr: 15.2, cvr: 19.8, members: 1606, highlight: false },
+        { label: 'Gold Tier',      ctr: 22.4, cvr: 26.1, members: 2890, highlight: false },
+        { label: 'Platinum Tier',  ctr: 31.8, cvr: 38.9, members: 957,  highlight: true  },
+        { label: 'Female',         ctr: 21.3, cvr: 25.2, members: 1923, highlight: false },
+        { label: 'Male',           ctr: 18.9, cvr: 22.4, members: 1924, highlight: false },
+      ],
+      insight: 'iOS users convert 43% better than Android. Platinum tier accounts for only 25% of audience but drives highest CVR. Consider iOS-first creative and Platinum-exclusive messaging.',
+    },
+    timingAnalysis: {
+      peakHour: 9, peakOpenRate: 34.2, peakClickRate: 18.1,
+      hourlyData: genHourly(9, 34.2, 18.1),
+      insight: 'Khung 09:00–10:00 có tỷ lệ mở cao nhất (34.2%). Đề xuất: dịch lịch gửi từ 09:00 sang 08:45 để đón đầu peak.',
+      bestDays: ['Tuesday', 'Wednesday', 'Thursday'],
+    },
+  },
+
+  'cmp_2': {
+    delivery: {
+      totalSent: 1203, delivered: 1187, failed: 16, pending: 0,
+      deliveryRate: 98.7,
+      channelBreakdown: [
+        { channel: 'Push Notification', sent: 1203, delivered: 1187, failed: 16, rate: 98.7 },
+      ],
+      deviceBreakdown: [
+        { device: 'iOS',     sent: 712,  delivered: 708,  failed: 4,  rate: 99.4 },
+        { device: 'Android', sent: 491,  delivered: 479,  failed: 12, rate: 97.6 },
+      ],
+      failureReasons: [
+        { reason: 'Device Offline', count: 9,  pct: 56 },
+        { reason: 'Invalid Token',  count: 5,  pct: 31 },
+        { reason: 'Other',          count: 2,  pct: 13 },
+      ],
+    },
+    segmentEngagement: {
+      platformAvgCtr: 12.4, platformAvgCvr: 15.1,
+      groups: [
+        { label: 'iOS Users',     ctr: 41.2, cvr: 18.3, members: 712,  highlight: true  },
+        { label: 'Android Users', ctr: 33.8, cvr: 12.9, members: 491,  highlight: false },
+        { label: 'Silver Tier',   ctr: 35.4, cvr: 14.2, members: 890,  highlight: false },
+        { label: 'Gold Tier',     ctr: 42.1, cvr: 19.8, members: 313,  highlight: true  },
+        { label: 'Female',        ctr: 39.4, cvr: 16.8, members: 621,  highlight: false },
+        { label: 'Male',          ctr: 36.7, cvr: 14.1, members: 582,  highlight: false },
+      ],
+      insight: 'Points Expiry messaging resonates strongly across all groups. Gold tier users open at 42.1% — consider more urgent copy for Silver tier to boost their CVR.',
+    },
+    timingAnalysis: {
+      peakHour: 10, peakOpenRate: 42.1, peakClickRate: 22.3,
+      hourlyData: genHourly(10, 42.1, 22.3),
+      insight: 'Peak tại 10:00 (42.1% open rate). Đây là thời điểm users kiểm tra điện thoại sau giờ sáng. Không cần điều chỉnh lịch gửi.',
+      bestDays: ['Monday', 'Tuesday', 'Friday'],
+    },
+  },
+
+  'cmp_3': {
+    delivery: {
+      totalSent: 418, delivered: 411, failed: 7, pending: 0,
+      deliveryRate: 98.3,
+      channelBreakdown: [
+        { channel: 'Loyalty Action', sent: 418, delivered: 411, failed: 7, rate: 98.3 },
+      ],
+      deviceBreakdown: [
+        { device: 'iOS',     sent: 253, delivered: 251, failed: 2, rate: 99.2 },
+        { device: 'Android', sent: 165, delivered: 160, failed: 5, rate: 97.0 },
+      ],
+      failureReasons: [
+        { reason: 'Account Inactive', count: 5, pct: 71 },
+        { reason: 'System Error',     count: 2, pct: 29 },
+      ],
+    },
+    segmentEngagement: {
+      platformAvgCtr: 12.4, platformAvgCvr: 15.1,
+      groups: [
+        { label: 'iOS Users',     ctr: 68.4, cvr: 98.2, members: 253, highlight: true  },
+        { label: 'Android Users', ctr: 61.2, cvr: 97.4, members: 165, highlight: false },
+        { label: 'Gold Tier',     ctr: 72.1, cvr: 100.0, members: 298, highlight: true },
+        { label: 'Silver Tier',   ctr: 58.4, cvr: 99.4, members: 120, highlight: false },
+        { label: 'Female',        ctr: 71.3, cvr: 100.0, members: 221, highlight: false },
+        { label: 'Male',          ctr: 60.8, cvr: 98.4, members: 197, highlight: false },
+      ],
+      insight: 'Birthday campaigns have exceptionally high CVR across all groups (100% for loyalty actions). Female users show 17% higher CTR than male — consider personalised birthday creative by gender.',
+    },
+    timingAnalysis: {
+      peakHour: 0, peakOpenRate: 71.2, peakClickRate: 55.8,
+      hourlyData: genHourly(0, 71.2, 55.8),
+      insight: 'Gửi lúc 00:01 đón đúng ngày sinh nhật — tỷ lệ mở 71.2%. Đây là mức tối ưu, không nên thay đổi lịch gửi.',
+      bestDays: ['All days (birthday-triggered)'],
+    },
+  },
+
+  'cmp_4': {
+    delivery: {
+      totalSent: 234, delivered: 0, failed: 0, pending: 234,
+      deliveryRate: 0,
+      channelBreakdown: [
+        { channel: 'Push Notification', sent: 234, delivered: 0, failed: 0, rate: 0 },
+        { channel: 'In-App Popup',      sent: 234, delivered: 0, failed: 0, rate: 0 },
+      ],
+      deviceBreakdown: [
+        { device: 'iOS',     sent: 142, delivered: 0, failed: 0, rate: 0 },
+        { device: 'Android', sent: 92,  delivered: 0, failed: 0, rate: 0 },
+      ],
+      failureReasons: [],
+    },
+    segmentEngagement: {
+      platformAvgCtr: 12.4, platformAvgCvr: 15.1,
+      groups: [
+        { label: 'iOS Users',      ctr: 0, cvr: 0, members: 142, highlight: false },
+        { label: 'Android Users',  ctr: 0, cvr: 0, members: 92,  highlight: false },
+        { label: 'Platinum Tier',  ctr: 0, cvr: 0, members: 156, highlight: false },
+        { label: 'VIP Sub-tier',   ctr: 0, cvr: 0, members: 78,  highlight: false },
+      ],
+      insight: 'Campaign chưa được phân phối (Scheduled). Dữ liệu engagement sẽ cập nhật sau khi campaign được kích hoạt vào Mar 24, 2026 09:00.',
+    },
+    timingAnalysis: {
+      peakHour: 9, peakOpenRate: 0, peakClickRate: 0,
+      hourlyData: Array.from({ length: 24 }, (_, h) => ({ hour: h, openRate: 0, clickRate: 0 })),
+      insight: 'Campaign chưa phân phối. Dựa trên profile phân khúc VIP Churning, khung giờ đề xuất là 09:00–10:00 (based on similar VIP segments).',
+      bestDays: ['Monday', 'Wednesday', 'Friday'],
+    },
+  },
+
+  'cmp_7': {
+    delivery: {
+      totalSent: 2156, delivered: 2089, failed: 67, pending: 0,
+      deliveryRate: 96.9,
+      channelBreakdown: [
+        { channel: 'Push Notification', sent: 1580, delivered: 1532, failed: 48, rate: 96.9 },
+        { channel: 'In-App Banner',     sent: 576,  delivered: 557,  failed: 19, rate: 96.7 },
+      ],
+      deviceBreakdown: [
+        { device: 'iOS',     sent: 1290, delivered: 1274, failed: 16, rate: 98.8 },
+        { device: 'Android', sent: 866,  delivered: 815,  failed: 51, rate: 94.1 },
+      ],
+      failureReasons: [
+        { reason: 'Device Offline', count: 38, pct: 57 },
+        { reason: 'Invalid Token',  count: 21, pct: 31 },
+        { reason: 'User Opted Out', count: 8,  pct: 12 },
+      ],
+    },
+    segmentEngagement: {
+      platformAvgCtr: 12.4, platformAvgCvr: 15.1,
+      groups: [
+        { label: 'iOS Users',     ctr: 27.4, cvr: 4.8, members: 1290, highlight: true  },
+        { label: 'Android Users', ctr: 19.1, cvr: 3.1, members: 866,  highlight: false },
+        { label: 'Male',          ctr: 28.3, cvr: 5.2, members: 1190, highlight: true  },
+        { label: 'Female',        ctr: 17.9, cvr: 2.8, members: 966,  highlight: false },
+        { label: 'Age 25–34',     ctr: 31.2, cvr: 6.1, members: 892,  highlight: true  },
+        { label: 'Age 35–44',     ctr: 21.4, cvr: 3.9, members: 1264, highlight: false },
+      ],
+      insight: 'Loan retargeting performs significantly better for iOS male users aged 25–34 (31.2% CTR). Android delivery failure rate 4× higher — investigate token refresh issues.',
+    },
+    timingAnalysis: {
+      peakHour: 11, peakOpenRate: 28.4, peakClickRate: 14.2,
+      hourlyData: genHourly(11, 28.4, 14.2),
+      insight: 'Peak tại 11:00 (28.4%). Giao dịch loan thường được cân nhắc vào giờ trưa. Đề xuất: thêm lịch gửi thứ 2 lúc 18:00 để capture khung "after-work" consideration.',
+      bestDays: ['Tuesday', 'Thursday'],
+    },
+  },
+
+  'cmp_8': {
+    delivery: {
+      totalSent: 8934, delivered: 8712, failed: 222, pending: 0,
+      deliveryRate: 97.5,
+      channelBreakdown: [
+        { channel: 'Push Notification', sent: 5360, delivered: 5228, failed: 132, rate: 97.5 },
+        { channel: 'In-App Banner',     sent: 3574, delivered: 3484, failed: 90,  rate: 97.5 },
+      ],
+      deviceBreakdown: [
+        { device: 'iOS',     sent: 4912, delivered: 4878, failed: 34,  rate: 99.3 },
+        { device: 'Android', sent: 4022, delivered: 3834, failed: 188, rate: 95.3 },
+      ],
+      failureReasons: [
+        { reason: 'Device Offline', count: 124, pct: 56 },
+        { reason: 'Invalid Token',  count: 71,  pct: 32 },
+        { reason: 'User Opted Out', count: 27,  pct: 12 },
+      ],
+    },
+    segmentEngagement: {
+      platformAvgCtr: 12.4, platformAvgCvr: 15.1,
+      groups: [
+        { label: 'iOS Users',       ctr: 11.2, cvr: 2.1, members: 4912, highlight: false },
+        { label: 'Android Users',   ctr: 6.4,  cvr: 1.4, members: 4022, highlight: false },
+        { label: 'Bangkok (BKK)',   ctr: 10.4, cvr: 2.3, members: 5840, highlight: false },
+        { label: 'Other Province',  ctr: 6.1,  cvr: 1.1, members: 3094, highlight: false },
+        { label: 'Age 18–24',       ctr: 14.8, cvr: 2.9, members: 3124, highlight: true  },
+        { label: 'Age 25–34',       ctr: 9.2,  cvr: 1.8, members: 5810, highlight: false },
+      ],
+      insight: 'Young Urban 18–24 segment outperforms older cohorts by 61% on CTR. Overall CTR (9%) below platform avg — consider more targeted creative for specific sub-cities within Bangkok.',
+    },
+    timingAnalysis: {
+      peakHour: 9, peakOpenRate: 19.4, peakClickRate: 8.2,
+      hourlyData: genHourly(9, 19.4, 8.2),
+      insight: 'Peak tại 09:00. Phân khúc Young Urban có engagement cả vào 19:00–21:00 (evening scroll time). Đề xuất: thêm send window 19:30 cho lần chạy tiếp theo.',
+      bestDays: ['Friday', 'Saturday', 'Sunday'],
+    },
+  },
+
+  'cmp_9': {
+    delivery: {
+      totalSent: 4210, delivered: 4087, failed: 123, pending: 8235,
+      deliveryRate: 97.1,
+      channelBreakdown: [
+        { channel: 'Push Notification', sent: 3158, delivered: 3071, failed: 87, rate: 97.2 },
+        { channel: 'In-App Banner',     sent: 1052, delivered: 1016, failed: 36, rate: 96.6 },
+      ],
+      deviceBreakdown: [
+        { device: 'iOS',     sent: 2526, delivered: 2494, failed: 32, rate: 98.7 },
+        { device: 'Android', sent: 1684, delivered: 1593, failed: 91, rate: 94.6 },
+      ],
+      failureReasons: [
+        { reason: 'Device Offline', count: 68,  pct: 55 },
+        { reason: 'Invalid Token',  count: 42,  pct: 34 },
+        { reason: 'User Opted Out', count: 13,  pct: 11 },
+      ],
+    },
+    segmentEngagement: {
+      platformAvgCtr: 12.4, platformAvgCvr: 15.1,
+      groups: [
+        { label: 'iOS Users',      ctr: 10.8, cvr: 1.2, members: 2526, highlight: false },
+        { label: 'Android Users',  ctr: 6.4,  cvr: 0.6, members: 1684, highlight: false },
+        { label: 'Dormant 90–120d', ctr: 11.4, cvr: 1.4, members: 2840, highlight: false },
+        { label: 'Dormant 120d+',  ctr: 6.1,  cvr: 0.7, members: 1370, highlight: false },
+        { label: 'Previously Gold', ctr: 14.2, cvr: 2.1, members: 980,  highlight: true  },
+        { label: 'Previously Silv', ctr: 8.9,  cvr: 1.0, members: 3230, highlight: false },
+      ],
+      insight: 'Previously Gold members who became dormant have 2.3× higher CTR than other dormant groups. Recommend creating a dedicated sub-campaign for this high-value sub-group.',
+    },
+    timingAnalysis: {
+      peakHour: 8, peakOpenRate: 29.8, peakClickRate: 11.2,
+      hourlyData: genHourly(8, 29.8, 11.2),
+      insight: 'Peak tại 08:00 — đây là thời điểm users check điện thoại trước khi bắt đầu ngày làm việc. Đề xuất: giữ nguyên lịch gửi hiện tại, tối ưu copy hơn là timing.',
+      bestDays: ['Sunday', 'Monday'],
+    },
+  },
+};

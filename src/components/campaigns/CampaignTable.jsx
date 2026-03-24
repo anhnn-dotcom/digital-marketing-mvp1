@@ -34,11 +34,14 @@ export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, o
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'Running': return 'bg-blue-100 text-blue-700';
-      case 'Active': return 'bg-green-100 text-green-700';
+      case 'Running':   return 'bg-blue-100 text-blue-700';
+      case 'Active':    return 'bg-green-100 text-green-700';
       case 'Scheduled': return 'bg-indigo-100 text-indigo-700';
       case 'Completed': return 'bg-gray-100 text-gray-700';
-      case 'Inactive': return 'bg-orange-100 text-orange-700';
+      case 'Paused':    return 'bg-amber-100 text-amber-700';
+      case 'Draft':     return 'bg-slate-100 text-slate-600';
+      case 'Archived':  return 'bg-red-50 text-red-500';
+      case 'Inactive':  return 'bg-orange-100 text-orange-700';
       default: return 'bg-gray-100 text-gray-700';
     }
   };
@@ -200,10 +203,13 @@ export default function CampaignTable({ campaigns, onManage, onEdit, onDelete, o
       }
     },
     {
-      header: 'Next Run',
-      accessorKey: 'nextRun',
+      header: 'End Date',
+      accessorKey: 'endDate',
       width: '10%',
-      cell: (row) => <span className="text-xs font-medium text-[#0F172A]">{row.nextRun || '—'}</span>
+      cell: (row) => {
+        const ed = row.endDate || row.scheduleDetails?.end;
+        return <span className="text-xs font-medium text-[#0F172A]">{ed ? new Date(ed).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }) : '—'}</span>;
+      }
     },
     {
       header: '',
