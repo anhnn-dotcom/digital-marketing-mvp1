@@ -31,8 +31,8 @@ export default function ComposeForm({ data, onUpdate }) {
   };
 
   const handleSend = () => {
-    if (!data.title || !data.body || !data.campaign) {
-      toast.error('Please fill in required fields (Campaign, Title, Body)');
+    if (!data.title || !data.body) {
+      toast.error('Please fill in required fields (Title, Body)');
       return;
     }
     setShowConfirm(true);
@@ -81,62 +81,11 @@ export default function ComposeForm({ data, onUpdate }) {
         </div>
       )}
 
-      {/* Target */}
-      <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
-        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">1. Target Audience</h3>
-        
-        <Select 
-          label="Load from Template (Optional)"
-          options={['', ...pushTemplates.map(t => ({ value: t.id, label: t.campaign + ' - ' + t.title }))]}
-          onChange={handleTemplateSelect}
-        />
 
-        <Select 
-          label="Campaign*"
-          options={['', ...CAMPAIGNS]}
-          value={data.campaign}
-          onChange={(e) => onUpdate({ ...data, campaign: e.target.value })}
-        />
-
-        {data.campaign && (
-          <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] animate-in fade-in slide-in-from-top-1">
-            <div className="text-sm font-medium text-[#0F172A] mb-1">Target Segment</div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center px-2.5 py-1 rounded bg-blue-100 text-blue-800 text-xs font-medium">
-                {getSegmentForCampaign(data.campaign)}
-              </span>
-            </div>
-            <div className="text-xs text-[#64748B] flex items-center gap-1.5 mt-2">
-              <Info className="w-4 h-4 text-blue-500" />
-              <span>3,847 members · ~3,412 with push enabled (88.4%)</span>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-3 pt-2">
-          <label className="text-sm font-medium text-[#0F172A]">Send to:</label>
-          <label className="flex items-center gap-3 cursor-pointer group">
-            <div className="relative flex items-center justify-center">
-              <input type="radio" className="peer sr-only" checked={data.sendTo === 'all'} onChange={() => onUpdate({ ...data, sendTo: 'all' })} />
-              <div className="w-4 h-4 rounded-full border-2 border-[#CBD5E1] peer-checked:border-[#2563EB]"></div>
-              <div className="w-2 h-2 rounded-full bg-[#2563EB] absolute scale-0 peer-checked:scale-100 transition-transform"></div>
-            </div>
-            <span className="text-sm text-[#475569]">All members</span>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer group">
-            <div className="relative flex items-center justify-center">
-              <input type="radio" className="peer sr-only" checked={data.sendTo === 'pushEnabled'} onChange={() => onUpdate({ ...data, sendTo: 'pushEnabled' })} />
-              <div className="w-4 h-4 rounded-full border-2 border-[#CBD5E1] peer-checked:border-[#2563EB]"></div>
-              <div className="w-2 h-2 rounded-full bg-[#2563EB] absolute scale-0 peer-checked:scale-100 transition-transform"></div>
-            </div>
-            <span className="text-sm text-[#475569]">Members with push enabled only</span>
-          </label>
-        </div>
-      </section>
 
       {/* Content */}
       <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
-        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">2. Message Content</h3>
+        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">1. Message Content</h3>
         
         <div className="space-y-1">
           <Input 
@@ -179,7 +128,7 @@ export default function ComposeForm({ data, onUpdate }) {
 
       {/* Action */}
       <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
-        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">3. On Tap Action</h3>
+        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">2. On Tap Action</h3>
         
         <div className="space-y-4 pt-2">
           <label className="flex items-start gap-3 cursor-pointer group">
@@ -235,7 +184,7 @@ export default function ComposeForm({ data, onUpdate }) {
 
       {/* Schedule */}
       <section className="bg-white rounded-xl border border-[#E2E8F0] p-6 shadow-sm space-y-5">
-        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">4. Schedule</h3>
+        <h3 className="text-base font-bold text-[#0F172A] border-b border-[#E2E8F0] pb-3">3. Schedule</h3>
         
         <div className="space-y-4 pt-2">
           <label className="flex items-start gap-3 cursor-pointer group">

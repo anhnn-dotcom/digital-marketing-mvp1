@@ -12,6 +12,7 @@ import CreateCampaignPage from './pages/CreateCampaignPage';
 import CampaignDashboardPage from './pages/CampaignDashboardPage';
 import DynamicContentPage from './pages/DynamicContentPage';
 import PushNotificationPage from './pages/PushNotificationPage';
+import PushNotificationListPage from './pages/PushNotificationListPage';
 import RecommendationsPage from './pages/RecommendationsPage';
 import ReportsPage from './pages/ReportsPage';
 import OverviewDashboardPage from './pages/OverviewDashboardPage';
@@ -44,7 +45,9 @@ function App() {
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/activity-log" element={<ActivityLogPage />} />
               <Route path="/dynamic-content" element={<DynamicContentPage />} />
-              <Route path="/push-notifications" element={<PushNotificationPage />} />
+              <Route path="/push-notifications" element={<PushNotificationListPage />} />
+              <Route path="/push-notifications/create" element={<PushNotificationPage />} />
+              <Route path="/push-notifications/:id" element={<PushNotificationPage />} />
               <Route path="/recommendations" element={<RecommendationsPage />} />
               <Route path="/data-pipeline" element={<DataPipelinePage />} />
               <Route path="/reports" element={<ReportsPage />} />

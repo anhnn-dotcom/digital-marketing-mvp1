@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Bell, Smartphone, Zap, Star, Search, Check, ChevronDown, ChevronUp } from 'lucide-react';
-import { DYNAMIC_CONTENTS, RECOMMENDATION_RULES } from '../../../constants/mockData';
+import { DYNAMIC_CONTENTS, RECOMMENDATION_RULES, PUSH_TEMPLATES } from '../../../constants/mockData';
 import Toggle from '../../ui/Toggle';
 
 const DISPLAY_TRIGGERS = ['On app open', 'After login', 'After transaction'];
@@ -59,25 +59,37 @@ function CharInput({ label, value, max, onChange, multiline = false }) {
   );
 }
 
-function ContentLibraryPicker({ value, onChange }) {
+function ContentLibraryMultiPicker({ values = [], onChange }) {
   const [search, setSearch] = useState('');
   const published = DYNAMIC_CONTENTS.filter(dc => dc.status === 'Active' || dc.status === 'Draft');
   const filtered = published.filter(dc => dc.name.toLowerCase().includes(search.toLowerCase()));
-  const selected = published.find(dc => dc.id === value);
+  const selectedContents = values.map(id => published.find(dc => dc.id === id)).filter(Boolean);
+
+  const handleToggle = (id) => {
+    if (values.includes(id)) {
+      onChange(values.filter(v => v !== id));
+    } else {
+      onChange([...values, id]);
+    }
+  };
 
   return (
     <div className="space-y-3">
       <label className="text-sm font-medium text-[#0F172A] block">Pick from Content Library</label>
-      {selected && (
-        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <div className="w-12 h-10 bg-gradient-to-br from-blue-400 to-indigo-400 rounded flex items-center justify-center text-white text-xs font-bold">
-            {selected.type[0]}
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-blue-900">{selected.name}</p>
-            <p className="text-xs text-blue-600">{selected.type} · {selected.segment}</p>
-          </div>
-          <button onClick={() => onChange('')} className="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>
+      {selectedContents.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {selectedContents.map(selected => (
+            <div key={selected.id} className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="w-12 h-10 bg-gradient-to-br from-blue-400 to-indigo-400 rounded flex items-center justify-center text-white text-xs font-bold shrink-0">
+                {selected.type[0]}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-blue-900 truncate">{selected.name}</p>
+                <p className="text-xs text-blue-600">{selected.type} · {selected.segment}</p>
+              </div>
+              <button onClick={() => handleToggle(selected.id)} className="text-xs text-red-500 hover:text-red-700 font-medium shrink-0">Remove</button>
+            </div>
+          ))}
         </div>
       )}
       <div className="relative">
@@ -94,17 +106,74 @@ function ContentLibraryPicker({ value, onChange }) {
         {filtered.map(dc => (
           <button
             key={dc.id}
-            onClick={() => onChange(dc.id)}
-            className={`flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all ${value === dc.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-blue-300'}`}
+            onClick={() => handleToggle(dc.id)}
+            className={`flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all ${values.includes(dc.id) ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-blue-300'}`}
           >
             <div className={`w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold shrink-0 ${dc.type === 'Banner' ? 'bg-purple-500' : 'bg-indigo-500'}`}>
               {dc.type[0]}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-800 truncate">{dc.name}</p>
               <p className="text-[10px] text-slate-400">{dc.type}</p>
             </div>
-            {value === dc.id && <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 ml-auto" />}
+            {values.includes(dc.id) && <Check className="w-3.5 h-3.5 text-blue-600 shrink-0 ml-auto" />}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PushLibraryPicker({ value, onChange, onSelectTemplate }) {
+  const [search, setSearch] = useState('');
+  const filtered = PUSH_TEMPLATES.filter(pt => pt.title.toLowerCase().includes(search.toLowerCase()) || pt.campaign.toLowerCase().includes(search.toLowerCase()));
+  const selected = PUSH_TEMPLATES.find(pt => pt.id === value);
+
+  return (
+    <div className="space-y-3">
+      <label className="text-sm font-medium text-[#0F172A] block">Pick from Push Notifications</label>
+      {selected && (
+        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+            <Bell className="w-5 h-5 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-blue-900">{selected.title}</p>
+            <p className="text-xs text-blue-600 line-clamp-1">{selected.body}</p>
+          </div>
+          <button onClick={() => onChange('')} className="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>
+        </div>
+      )}
+      <div className="relative">
+        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+        <input
+          type="text"
+          placeholder="Search push notification templates..."
+          className="w-full pl-8 pr-3 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white focus:outline-none focus:border-blue-300"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+      </div>
+      <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+        {filtered.map(pt => (
+          <button
+            key={pt.id}
+            onClick={() => {
+              onChange(pt.id);
+              if (onSelectTemplate) {
+                onSelectTemplate(pt);
+              }
+            }}
+            className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-all ${value === pt.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-blue-300'}`}
+          >
+            <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${value === pt.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-[#F1F5F9] border-[#E2E8F0] text-slate-400'}`}>
+              <Bell className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-slate-800 truncate">{pt.title}</p>
+              <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{pt.body}</p>
+            </div>
+            {value === pt.id && <Check className="w-4 h-4 text-blue-600 shrink-0 mt-1" />}
           </button>
         ))}
       </div>
@@ -142,6 +211,19 @@ export default function ChannelsContentStep({ data, onUpdate, errors }) {
           checked={!!ch.push?.enabled}
           onToggle={() => toggleCh('push')}
         >
+          <PushLibraryPicker
+            value={ch.push?.templateId}
+            onChange={(id) => updateChannel('push', { push: { ...ch.push, templateId: id } })}
+            onSelectTemplate={(pt) => {
+              // Optionally autofill title and body if user selects a template
+              updateChannel('push', { push: { ...ch.push, templateId: pt.id, title: pt.title, body: pt.body } });
+            }}
+          />
+          <div className="flex items-center gap-4 my-2">
+            <div className="h-px bg-slate-200 flex-1"></div>
+            <span className="text-xs text-slate-400 font-medium">OR COMPOSE MANUALLY</span>
+            <div className="h-px bg-slate-200 flex-1"></div>
+          </div>
           <CharInput
             label="Notification Title *"
             value={ch.push?.title}
@@ -214,22 +296,31 @@ export default function ChannelsContentStep({ data, onUpdate, errors }) {
           onToggle={() => toggleCh('banner')}
         >
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-[#0F172A]">Content Type</label>
+            <label className="text-sm font-medium text-[#0F172A]">Allowed Content Types</label>
             <div className="flex gap-2">
-              {['Banner', 'Popup'].map(t => (
-                <button
-                  key={t}
-                  onClick={() => updateChannel('banner', { banner: { ...ch.banner, contentType: t } })}
-                  className={`flex-1 py-2 rounded-lg border text-xs font-semibold transition-all ${(ch.banner?.contentType || 'Banner') === t ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'}`}
-                >
-                  {t}
-                </button>
-              ))}
+              {['Banner', 'Popup'].map(t => {
+                const activeTypes = ch.banner?.contentTypes || ['Banner'];
+                const isActive = activeTypes.includes(t);
+                return (
+                  <button
+                    key={t}
+                    onClick={() => {
+                      const newTypes = isActive ? activeTypes.filter(x => x !== t) : [...activeTypes, t];
+                      if (newTypes.length > 0) {
+                        updateChannel('banner', { banner: { ...ch.banner, contentTypes: newTypes } });
+                      }
+                    }}
+                    className={`flex-1 py-2 rounded-lg border text-xs font-semibold transition-all ${isActive ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'}`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
             </div>
           </div>
-          <ContentLibraryPicker
-            value={ch.banner?.contentId}
-            onChange={v => updateChannel('banner', { banner: { ...ch.banner, contentId: v } })}
+          <ContentLibraryMultiPicker
+            values={ch.banner?.contentIds || []}
+            onChange={v => updateChannel('banner', { banner: { ...ch.banner, contentIds: v } })}
           />
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-[#0F172A]">Display Trigger</label>
